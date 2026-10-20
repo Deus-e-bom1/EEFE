@@ -66,12 +66,22 @@
                 <div class="payment-right"><h3 id="display-parcela">R$ 877,86</h3><span id="display-total">Total: R$ 10.534,29</span></div>
             </div>
         </div>
-        <a href="cpf.html" class="btn-continue">Continuar com <span id="btn-valor">R$ 10.000,00</span> <i class="fa-solid fa-arrow-right"></i></a>
+        <!-- O botão agora chama uma função que envia o valor pela URL -->
+        <button onclick="irParaCpf()" class="btn-continue">Continuar com <span id="btn-valor">R$ 10.000,00</span> <i class="fa-solid fa-arrow-right"></i></button>
     </main>
     <script>
         let valorEmprestimo = 10000; let qtdParcelas = 12; const taxaJurosMensal = 0.0081;
         const formatarMoeda = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        document.querySelectorAll('.parcela-btn').forEach(btn => { btn.addEventListener('click', (e) => { document.querySelectorAll('.parcela-btn').forEach(b => b.classList.remove('active')); e.target.classList.add('active'); qtdParcelas = parseInt(e.target.getAttribute('data-parcelas')); atualizar(); }); });
+        
+        document.querySelectorAll('.parcela-btn').forEach(btn => { 
+            btn.addEventListener('click', (e) => { 
+                document.querySelectorAll('.parcela-btn').forEach(b => b.classList.remove('active')); 
+                e.target.classList.add('active'); 
+                qtdParcelas = parseInt(e.target.getAttribute('data-parcelas')); 
+                atualizar(); 
+            }); 
+        });
+        
         function atualizar() {
             const slider = document.getElementById('slider-valor');
             const percent = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
@@ -85,12 +95,16 @@
             const valorParcela = valorEmprestimo * fator;
             document.getElementById('display-parcela').textContent = formatarMoeda(valorParcela);
             document.getElementById('display-total').textContent = "Total: " + formatarMoeda(valorParcela * n);
-            localStorage.setItem('ecred_valor', valorFormatado);
-            localStorage.setItem('ecred_parcela', formatarMoeda(valorParcela));
-            localStorage.setItem('ecred_prazo', n + ' meses');
         }
+        
         document.getElementById('slider-valor').addEventListener('input', atualizar);
         atualizar();
+
+        // FUNÇÃO QUE ENVIA O VALOR PARA A PRÓXIMA ETAPA NA URL
+        function irParaCpf() {
+            const valorParaEnviar = valorEmprestimo; 
+            window.location.href = `cpf.html?valor=${valorParaEnviar}`;
+        }
     </script>
 </body>
 </html>
