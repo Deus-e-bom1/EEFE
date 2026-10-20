@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ecred - Empréstimo Online</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* CSS GLOBAL (Afeta todas as telas) */
+        :root {
+            --green-primary: #a3e635;
+            --green-dark: #65a30d;
+            --bg-light: #f8faf8;
+            --bg-dark: #0a0f0c;
+            --text-dark: #111827;
+            --text-gray: #6b7280;
+            --white: #ffffff;
+            --border-color: #e5e7eb;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-light); color: var(--text-dark); -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        .step-container { display: none; flex-direction: column; min-height: 100vh; }
+        .step-container.active { display: flex; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* HEADER PADRÃO */
+        header { background-color: var(--white); padding: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
+        .logo { font-size: 24px; font-weight: 800; letter-spacing: -1px; color: var(--text-dark); text-decoration: none; cursor: pointer; }
+        .logo span { color: var(--green-dark); }
+        .back-link { color: var(--text-gray); text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 6px; font-weight: 500; cursor: pointer; }
+        
+        /* PROGRESSO PADRÃO */
+        .progress-container { width: 100%; height: 4px; background-color: #e5e7eb; }
+        .progress-bar { height: 100%; background-color: var(--green-primary); border-radius: 0 4px 4px 0; transition: width 0.3s ease; }
+
+        /* CONTAINER PADRÃO */
+        main { flex: 1; padding: 30px 15px; display: flex; flex-direction: column; align-items: center; max-width: 500px; margin: 0 auto; width: 100%; }
+        .badge-simulacao { font-size: 11px; font-weight: 700; color: var(--text-gray); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px; }
+        h1 { font-size: 24px; font-weight: 700; margin-bottom: 10px; text-align: center; letter-spacing: -0.5px; }
+        .subtitle { font-size: 14px; color: var(--text-gray); text-align: center; margin-bottom: 25px; line-height: 1.5; padding: 0 10px; }
+
+        /* BOTÕES PADRÃO */
+        .btn-continue { background-color: var(--green-primary); color: var(--text-dark); text-decoration: none; padding: 18px; border-radius: 30px; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; transition: all 0.3s ease; border: none; box-shadow: 0 4px 15px rgba(163, 230, 53, 0.2); cursor: pointer; }
+        .btn-continue.disabled { background-color: #def2ad; color: #a3a3a3; cursor: not-allowed; box-shadow: none; pointer-events: none; }
+        .btn-continue:not(.disabled):hover { background-color: #bef264; transform: scale(1.01); }
+        .btn-continue:not(.disabled):active { transform: scale(0.98); }
+
+        /* =========================================
+           ETAPA 1: INDEX (HOME)
+        ========================================= */
+        #step-home .hero { background-color: var(--bg-dark); background-image: linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px); background-size: 40px 40px; padding: 30px 15px 80px 15px; color: var(--white); box-shadow: inset 0 200px 150px -100px rgba(163, 230, 53, 0.15); text-align: center; }
+        #step-home .hero-text h1 { font-size: 44px; line-height: 1.1; font-weight: 800; margin-bottom: 15px; letter-spacing: -1.5px; color: var(--white); }
+        #step-home .hero-text span { color: var(--green-primary); position: relative; display: inline-block; z-index: 1; }
+        #step-home .hero-text span::after { content: ''; position: absolute; left: -2%; bottom: -8px; width: 104%; height: 14px; z-index: -1; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 20' preserveAspectRatio='none'%3E%3Cpath d='M5,15 Q80,2 150,12 T295,8' stroke='%23a3e635' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-size: 100% 100%; background-repeat: no-repeat; }
+        #step-home .hero-text p { font-size: 16px; color: #d1d5db; line-height: 1.5; margin-bottom: 25px; }
+        #step-home .btn-green { background-color: var(--green-primary); color: var(--bg-dark); text-decoration: none; padding: 18px 20px; border-radius: 30px; font-size: 17px; font-weight: 700; display: block; width: 100%; text-align: center; margin-bottom: 20px; cursor: pointer; border: none; }
+        #step-home .hero-checks { display: flex; justify-content: center; gap: 15px; font-size: 12px; color: #d1d5db; }
+        #step-home .hero-checks i { color: var(--green-primary); margin-right: 4px; }
+        #step-home .stats-bar-wrapper { padding: 0 15px; margin-top: -40px; position: relative; z-index: 10; max-width: 500px; margin-left: auto; margin-right: auto; }
+        #step-home .stats-bar { background-color: #111111; border-radius: 16px; padding: 20px; display: flex; justify-content: space-between; align-items: center; color: var(--white); box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #222; }
+        #step-home .stat-item h3 { color: var(--green-primary); font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+        #step-home .stat-item p { color: #9ca3af; font-size: 11px; line-height: 1.2; text-align: center; }
+
+        /* =========================================
+           ETAPA 2: VALOR
+        ========================================= */
+        .simulator-card { background-color: var(--white); border-radius: 24px; padding: 30px 20px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid var(--border-color); margin-bottom: 20px; }
+        .main-value { font-size: 36px; font-weight: 800; color: var(--text-dark); text-align: center; margin-bottom: 25px; letter-spacing: -1.5px; }
+        .slider-wrapper input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        .slider-wrapper input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: var(--green-primary); border-radius: 5px; background-image: linear-gradient(to right, var(--green-primary) 0%, var(--green-primary) var(--percent), #e5f5ce var(--percent), #e5f5ce 100%); }
+        .slider-wrapper input[type=range]::-webkit-slider-thumb { height: 24px; width: 24px; border-radius: 50%; background: var(--white); border: 2px solid var(--green-primary); cursor: pointer; -webkit-appearance: none; margin-top: -8px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+        .slider-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-gray); margin-bottom: 25px; }
+        .divider { height: 1px; background-color: var(--border-color); margin: 25px 0; }
+        .parcelas-title { font-size: 15px; font-weight: 600; text-align: center; margin-bottom: 20px; }
+        .parcelas-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
+        .parcela-btn { background-color: #e5e7eb; border: none; padding: 12px 0; border-radius: 12px; font-size: 14px; font-weight: 600; color: var(--text-gray); cursor: pointer; transition: all 0.2s; }
+        .parcela-btn.active { background-color: var(--green-primary); color: var(--text-dark); }
+        .payment-details { background-color: #e5e7eb; border-radius: 16px; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .payment-left p { font-size: 14px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
+        .payment-left span { font-size: 12px; color: var(--text-gray); }
+        .payment-right { text-align: right; }
+        .payment-right h3 { font-size: 22px; font-weight: 800; color: var(--text-dark); margin-bottom: 4px; }
+        .payment-right span { font-size: 12px; color: var(--text-gray); }
+
+        /* =========================================
+           ETAPAS 3, 4, 5, 6, 9, 10, 11 (FORMULÁRIOS)
+        ========================================= */
+        .form-card { background-color: var(--white); border-radius: 24px; padding: 25px 20px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid var(--border-color); margin-bottom: 20px; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        .input-group label { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-dark); display: flex; align-items: center; gap: 5px; }
+        .input-group input { width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--border-color); font-size: 15px; color: var(--text-dark); outline: none; background-color: var(--white); }
+        .input-group input:focus { border-color: var(--green-primary); }
+        .input-group input:disabled { background-color: #f3f4f6; color: var(--text-gray); }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .privacy-box { background-color: #e5e7eb; border-radius: 12px; padding: 15px; display: flex; align-items: flex-start; gap: 12px; margin-top: 5px; }
+        .privacy-box i { color: var(--text-gray); font-size: 16px; margin-top: 2px; }
+        .privacy-box p { font-size: 12px; color: var(--text-gray); line-height: 1.5; }
+        .alterar-cpf { font-size: 12px; color: var(--green-dark); text-decoration: underline; text-align: right; display: block; margin-top: 5px; cursor: pointer; }
+        
+        /* Botões de Gênero e Opções */
+        .genero-group, .options-list { display: flex; flex-direction: column; gap: 10px; }
+        .genero-group { flex-direction: row; }
+        .genero-btn, .option-item { background-color: var(--white); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; font-size: 15px; color: var(--text-dark); cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; }
+        .genero-btn .circle, .option-item .custom-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border-color); flex-shrink: 0; }
+        .genero-btn.active, .option-item:has(input:checked) { border-color: var(--green-primary); box-shadow: 0 0 0 1px var(--green-primary); background-color: rgba(163, 230, 53, 0.05); }
+        .genero-btn.active .circle { border-color: var(--green-primary); background-color: var(--green-primary); }
+        .option-item input[type="radio"] { position: absolute; opacity: 0; }
+        .option-item:has(input:checked) .custom-radio { border-color: var(--green-primary); }
+        .option-item:has(input:checked) .custom-radio::after { content: ''; display: block; width: 10px; height: 10px; background: var(--green-primary); border-radius: 50%; margin: 3px auto; }
+        .checkbox-container { display: flex; align-items: center; gap: 10px; padding: 16px; border: 1px solid var(--border-color); border-radius: 12px; cursor: pointer; }
+        .checkbox-container input { display: none; }
+        .checkmark { width: 20px; height: 20px; border: 2px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .checkbox-container input:checked ~ .checkmark { border-color: var(--green-primary); background-color: var(--green-primary); }
+        .checkbox-container input:checked ~ .checkmark::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--text-dark); font-size: 10px; }
+        
+        /* Dias de Pagamento */
+        .days-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .day-option { border: 1px solid var(--border-color); border-radius: 12px; padding: 20px 10px; text-align: center; cursor: pointer; position: relative; background-color: var(--white); }
+        .day-option input { position: absolute; opacity: 0; }
+        .day-option .day-number { font-size: 20px; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 2px; }
+        .day-option .day-label { font-size: 10px; font-weight: 600; color: var(--text-gray); }
+        .day-option.active { border-color: var(--green-primary); box-shadow: 0 0 0 1px var(--green-primary); background-color: rgba(163, 230, 53, 0.05); }
+        .day-option.active .day-number { color: var(--green-dark); }
+        .due-date-box { background-color: #f0f4ed; border-radius: 16px; padding: 16px; display: none; align-items: center; gap: 15px; border: 1px solid var(--border-color); margin-top: 5px; }
+        .due-icon { width: 40px; height: 40px; background-color: #e2e8df; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4b5e42; font-size: 18px; }
+        .due-text strong { font-size: 14px; display: block; }
+        .due-text span { font-size: 13px; color: var(--text-gray); }
+
+        /* =========================================
+           ETAPA 7: ANALISANDO
+        ========================================= */
+        #step-analise { background-color: var(--bg-light); align-items: center; justify-content: center; }
+        .analysis-card { background-color: var(--bg-dark); background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 30px 30px; border-radius: 24px; padding: 40px 25px; width: 100%; max-width: 450px; text-align: center; color: var(--white); border: 1px solid #1f2937; }
+        .circle-wrapper { position: relative; width: 120px; height: 120px; margin: 0 auto 30px; }
+        .circle-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .circle-bg { fill: none; stroke: rgba(255, 255, 255, 0.1); stroke-width: 8; }
+        .circle-progress { fill: none; stroke: var(--green-primary); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 314; stroke-dashoffset: 314; transition: stroke-dashoffset 0.1s linear; }
+        .circle-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+        .circle-text h2 { font-size: 32px; font-weight: 800; color: var(--green-primary); line-height: 1; }
+        .circle-text span { font-size: 10px; font-weight: 700; color: #9ca3af; letter-spacing: 1px; }
+        .status-list { display: flex; flex-direction: column; gap: 10px; }
+        .status-item { display: flex; align-items: center; padding: 15px 20px; border-radius: 12px; background-color: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #6b7280; font-size: 14px; font-weight: 500; transition: all 0.3s ease; }
+        .status-icon { width: 24px; height: 24px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; margin-right: 15px; font-size: 12px; color: transparent; }
+        .status-item.completed { color: var(--white); border-color: rgba(163, 230, 53, 0.3); background-color: rgba(163, 230, 53, 0.05); }
+        .status-item.completed .status-icon { background-color: var(--green-primary); color: var(--bg-dark); }
+        .status-item.active { color: var(--white); }
+        .status-item.active .status-icon { background-color: transparent; border: 2px solid #4b5563; border-top-color: var(--green-primary); animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* =========================================
+           ETAPA 8: APROVADO
+        ========================================= */
+        #step-aprovado { align-items: center; justify-content: center; background-color: var(--bg-light); }
+        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99; }
+        .approved-card { background-color: var(--bg-dark); background-image: radial-gradient(circle at 50% 0%, rgba(163, 230, 53, 0.15) 0%, transparent 60%); border-radius: 24px; padding: 40px 25px; width: 100%; max-width: 450px; text-align: center; color: var(--white); border: 1px solid #1f2937; position: relative; z-index: 100; }
+        .icon-success { width: 80px; height: 80px; background-color: var(--green-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 36px; color: var(--bg-dark); box-shadow: 0 0 30px rgba(163, 230, 53, 0.4); animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
+        @keyframes scaleIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        .parabens { font-size: 13px; color: var(--green-primary); font-weight: 600; margin-bottom: 10px; }
+        .details-box { background-color: rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; margin-bottom: 25px; text-align: left; }
+        .valor-liberado { text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .valor-liberado p { font-size: 13px; color: #d1d5db; margin-bottom: 5px; }
+        .valor-liberado h2 { font-size: 32px; font-weight: 800; color: var(--green-primary); }
+        .detail-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px; color: #d1d5db; }
+        .detail-row strong { color: var(--white); font-weight: 600; }
+        .benefits-list { text-align: left; margin-bottom: 30px; padding: 0 10px; }
+        .benefit-item { display: flex; align-items: center; gap: 12px; font-size: 13px; color: #d1d5db; margin-bottom: 15px; }
+        .benefit-item i { color: var(--green-primary); font-size: 16px; }
+
+        /* =========================================
+           ETAPA 12: ABRINDO CONTA
+        ========================================= */
+        #step-abrindo { background-color: #030703; align-items: center; justify-content: center; background-image: radial-gradient(circle at 50% 45%, rgba(163, 230, 53, 0.05) 0%, transparent 40%); }
+        .icon-container { width: 90px; height: 90px; background-color: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; position: relative; box-shadow: 0 0 40px rgba(163, 230, 53, 0.05); }
+        .spinner { width: 36px; height: 36px; border: 3px solid rgba(163, 230, 53, 0.2); border-top-color: var(--green-primary); border-radius: 50%; animation: spin 1s linear infinite; transition: all 0.3s ease; }
+        .check-icon { position: absolute; font-size: 40px; color: var(--green-primary); opacity: 0; transform: scale(0.5); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .progress-bar-container { width: 100%; max-width: 300px; height: 4px; background-color: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden; margin: 0 auto 50px; }
+        .progress-bar-load { height: 100%; width: 0%; background-color: var(--green-primary); border-radius: 4px; transition: width 2.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* =========================================
+           ETAPA 13: SEGURO
+        ========================================= */
+        .status-card { background-color: #0a170c; border-radius: 20px; padding: 25px; color: var(--white); margin-bottom: 30px; border: 1px solid #1f2e18; width: 100%; text-align: left; }
+        .status-badge { font-size: 11px; font-weight: 700; color: var(--green-primary); letter-spacing: 1px; margin-bottom: 10px; display: block; }
+        .status-card h1 { font-size: 22px; font-weight: 800; margin-bottom: 10px; line-height: 1.2; text-align: left; color: var(--white); }
+        .status-card p { font-size: 14px; color: #9ca3af; line-height: 1.5; margin-bottom: 20px; }
+        .status-card p strong { color: var(--green-primary); }
+        .checklist { display: flex; flex-direction: column; gap: 12px; }
+        .check-item { display: flex; align-items: center; gap: 12px; font-size: 13px; color: #d1d5db; }
+        .check-item i { color: var(--green-primary); font-size: 14px; }
+        .check-item.active { color: var(--white); }
+        .check-item.active i { color: #fbbf24; }
+        .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; margin-top: 30px; font-size: 15px; font-weight: 700; width: 100%; text-align: left; }
+        .section-header i { color: var(--green-dark); }
+        .benefit-card { background-color: var(--white); border-radius: 16px; padding: 15px; display: flex; align-items: flex-start; gap: 15px; margin-bottom: 10px; border: 1px solid var(--border-color); width: 100%; text-align: left; }
+        .benefit-icon { width: 40px; height: 40px; background-color: rgba(163, 230, 53, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--green-dark); font-size: 18px; flex-shrink: 0; }
+        .benefit-text h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; color: var(--text-dark); }
+        .benefit-text p { font-size: 12px; color: var(--text-gray); line-height: 1.4; }
+        .quote-subtitle { font-size: 13px; color: var(--text-gray); margin-top: -10px; margin-bottom: 20px; width: 100%; text-align: left; }
+        .quote-option { background-color: var(--white); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px 20px 20px 45px; margin-bottom: 15px; cursor: pointer; position: relative; display: block; transition: all 0.2s; width: 100%; text-align: left; }
+        .quote-option input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+        .quote-option.active { border: 2px solid var(--green-dark); background-color: #fcfdfa; }
+        .quote-radio-circle { width: 20px; height: 20px; border: 2px solid #d1d5db; border-radius: 50%; position: absolute; left: 15px; top: 22px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .quote-option.active .quote-radio-circle { border-color: var(--green-dark); }
+        .quote-option.active .quote-radio-circle::after { content: ''; width: 10px; height: 10px; background-color: var(--green-dark); border-radius: 50%; }
+        .quote-content { display: flex; flex-direction: column; }
+        .quote-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+        .quote-value span { display: block; font-size: 12px; color: var(--text-gray); margin-bottom: 2px; }
+        .quote-value h3 { font-size: 22px; font-weight: 800; color: var(--green-dark); }
+        .quote-price { text-align: right; }
+        .quote-price span { display: block; font-size: 11px; color: var(--text-gray); margin-bottom: 2px; }
+        .quote-price strong { font-size: 16px; color: var(--text-dark); }
+        .quote-installment { font-size: 12px; color: var(--text-gray); }
+        .bottom-bar-fixed { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--bg-light); padding: 15px 20px 25px; border-top: 1px solid var(--border-color); z-index: 100; text-align: center; display: none; transform: translateY(100%); transition: transform 0.3s ease-in-out; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
+        .bottom-bar-fixed.visible { display: block; transform: translateY(0); }
+        .security-footer { display: flex; justify-content: center; gap: 15px; margin-top: 15px; font-size: 11px; color: var(--text-gray); }
+
+        /* =========================================
+           ETAPA 14: DIGITAL (DASHBOARD + MODAL SAQUE)
+        ========================================= */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; width: 100%; }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 44px; height: 44px; background-color: var(--green-primary); color: var(--bg-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
+        .user-greeting span { font-size: 12px; color: var(--text-gray); display: block; }
+        .user-greeting strong { font-size: 16px; font-weight: 700; }
+        .notification-btn { width: 40px; height: 40px; background-color: var(--bg-card); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); position: relative; }
+        .notification-btn::after { content: ''; position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background-color: var(--green-primary); border-radius: 50%; border: 2px solid var(--bg-card); }
+        .balance-card { background: linear-gradient(145deg, #0a1207, #060a04); border: 1px solid #1f2e18; border-radius: 20px; padding: 25px 20px; margin-bottom: 25px; position: relative; color: var(--white); width: 100%; text-align: left; }
+        .balance-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .balance-brand { display: flex; align-items: center; gap: 8px; }
+        .balance-brand strong { font-size: 16px; font-weight: 800; color: var(--green-primary); }
+        .balance-brand span { font-size: 12px; color: var(--text-gray); }
+        .account-info { font-size: 12px; color: var(--text-gray); margin-bottom: 15px; }
+        .account-info span { margin-right: 15px; }
+        .eye-icon { color: var(--text-gray); font-size: 16px; cursor: pointer; }
+        .balance-label { font-size: 13px; color: var(--text-gray); margin-bottom: 5px; }
+        .balance-value { font-size: 32px; font-weight: 800; color: var(--text-white); letter-spacing: -1px; }
+        .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; width: 100%; }
+        .action-btn { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 15px 5px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; }
+        .action-btn .icon-circle { width: 36px; height: 36px; background-color: rgba(255, 255, 255, 0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-white); font-size: 14px; }
+        .action-btn.active .icon-circle { background-color: var(--green-primary); color: var(--bg-dark); }
+        .action-btn span { font-size: 11px; color: var(--text-gray); font-weight: 500; }
+        .main-withdraw-btn { background-color: var(--green-primary); color: var(--bg-dark); border-radius: 16px; padding: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-bottom: 30px; font-weight: 700; font-size: 15px; width: 100%; border: none; }
+        .main-withdraw-btn .left-content { display: flex; align-items: center; gap: 10px; }
+        .section-title { font-size: 14px; font-weight: 600; color: var(--text-white); margin-bottom: 15px; width: 100%; text-align: left; }
+        .transaction-card { background-color: var(--bg-card); border-radius: 16px; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; width: 100%; border: 1px solid var(--border-color); }
+        .transaction-left { display: flex; align-items: center; gap: 15px; }
+        .transaction-icon { width: 36px; height: 36px; background-color: rgba(163, 230, 53, 0.1); color: var(--green-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .transaction-info strong { display: block; font-size: 14px; color: var(--text-white); margin-bottom: 4px; }
+        .transaction-info span { font-size: 12px; color: var(--text-gray); }
+        .transaction-value { text-align: right; }
+        .transaction-value strong { display: block; font-size: 14px; color: var(--green-primary); margin-bottom: 4px; }
+        .transaction-value span { font-size: 12px; color: var(--text-gray); }
+        
+        /* Modais */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: flex; align-items: flex-end; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-content { background-color: #1a1a1a; width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; padding: 25px 20px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1); border-top: 1px solid var(--border-color); max-height: 90vh; overflow-y: auto; color: var(--white); text-align: left; }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { font-size: 18px; font-weight: 700; }
+        .close-btn { background: none; border: none; color: var(--text-gray); font-size: 20px; cursor: pointer; }
+        .form-label { display: block; font-size: 13px; color: var(--text-gray); margin-bottom: 8px; font-weight: 500; }
+        .withdraw-value-box { background: linear-gradient(145deg, #14260a, #0d1706); border: 1px solid #2e4a1b; border-radius: 12px; padding: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .withdraw-value-box h3 { font-size: 22px; color: var(--green-primary); font-weight: 700; }
+        .withdraw-value-box p { font-size: 12px; color: var(--text-gray); margin-top: 2px; }
+        .badge-total { background-color: var(--green-primary); color: var(--bg-dark); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+        .modal-input-group { position: relative; margin-bottom: 20px; }
+        .modal-input-group input { width: 100%; background-color: #111; border: 1px solid var(--border-color); border-radius: 12px; padding: 16px 16px 16px 45px; color: var(--text-white); font-size: 15px; outline: none; }
+        .modal-input-group input:focus { border-color: var(--green-primary); }
+        .modal-input-group .icon-left { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-gray); }
+        .modal-input-group .icon-right { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-gray); pointer-events: none; }
+        .helper-text { font-size: 11px; color: var(--text-gray); margin-top: -10px; margin-bottom: 20px; display: block; }
+        .key-types-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .key-type-btn { background-color: #111; border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; color: var(--text-white); font-size: 13px; font-weight: 500; text-align: left; cursor: pointer; }
+        .key-type-btn.active { background-color: #222; border-color: var(--green-primary); }
+        .confirm-btn { width: 100%; background-color: var(--green-primary); color: var(--bg-dark); border: none; border-radius: 12px; padding: 18px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 10px; margin-bottom: 20px; }
+        .confirm-btn.disabled { background-color: #2e4a1b; color: #6b7280; cursor: not-allowed; }
+        .dropdown-menu { position: absolute; top: calc(100% + 5px); left: 0; width: 100%; background-color: #222; border: 1px solid var(--border-color); border-radius: 12px; max-height: 200px; overflow-y: auto; z-index: 10; display: none; }
+        .dropdown-menu.active { display: block; }
+        .bank-option { padding: 15px 16px; font-size: 14px; color: var(--text-white); cursor: pointer; border-bottom: 1px solid var(--border-color); }
+        .bank-option:hover { background-color: #333; }
+        
+        .modal-loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-loading.active { opacity: 1; pointer-events: all; }
+        .loading-content { background-color: #1a1a1a; width: 90%; max-width: 400px; border-radius: 24px; padding: 40px 20px; text-align: center; border: 1px solid var(--border-color); color: var(--white); }
+        .spinner-loading { width: 40px; height: 40px; border: 3px solid rgba(163, 230, 53, 0.2); border-top-color: var(--green-primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
+        .loading-content h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+        .loading-content p { font-size: 13px; color: var(--text-gray); }
+    </style>
+</head>
+<body>
+
+    <!-- ETAPA 1: HOME -->
+    <div id="step-home" class="step-container active">
+        <header><div class="logo">ecred<span>.</span></div></header>
+        <div class="hero">
+            <div class="hero-text">
+                <h1>Até R$ 20.000<br>direto no seu <span>PIX</span></h1>
+                <p>Simule grátis sem sair de casa e receba via PIX, <strong>mesmo negativado</strong>. Crédito rápido, com parcelas que cabem no seu bolso.</p>
+                <button onclick="navegar('valor')" class="btn-green">Simular meu crédito</button>
+                <div class="hero-checks">
+                    <span><i class="fa-solid fa-check"></i> Aprova negativado</span>
+                    <span><i class="fa-solid fa-check"></i> Sem fiador</span>
+                    <span><i class="fa-solid fa-check"></i> Pix em 10 min</span>
+                </div>
+            </div>
+        </div>
+        <div class="stats-bar-wrapper">
+            <div class="stats-bar">
+                <div class="stat-item"><h3>+180 mil</h3><p>brasileiros<br>atendidos</p></div>
+                <div class="stat-item"><h3>~20 min</h3><p>para cair<br>via PIX</p></div>
+                <div class="stat-item"><h3>R$ 640 mi</h3><p>liberados<br>em crédito</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ETAPA 2: VALOR -->
+    <div id="step-valor" class="step-container">
+        <header><div class="logo" onclick="navegar('home')">ecred<span>.</span></div><a class="back-link" onclick="navegar('home')"><i class="fa-solid fa-arrow-left"></i> Voltar</a></header>
+        <div class="progress-container"><div class="progress-bar" style="width: 20%;"></div></div>
+        <main>
+            <div class="badge-simulacao">SIMULAÇÃO</div>
+            <h1>De quanto você precisa?</h1>
+            <p class="subtitle">Arraste para escolher o valor. É grátis e sem compromisso.</p>
+            <div class="simulator-card">
+                <div class="main-value" id="display-valor">R$ 10.000,00</div>
+                <div class="slider-wrapper"><input type="range" id="slider-valor" min="3000" max="20000" step="100" value="10000"></div>
+                <div class="slider-labels"><span>R$ 3.000</span><span>R$ 20.000</span></div>
+                <div class="divider"></div>
+                <p class="parcelas-title">Em quantas parcelas?</p>
+                <div class="parcelas-grid">
+                    <button class="parcela-btn" data-parcelas="6" onclick="selecionarParcela(this)">6x</button>
+                    <button class="parcela-btn active" data-parcelas="12" onclick="selecionarParcela(this)">12x</button>
+                    <button class="parcela-btn" data-parcelas="18" onclick="selecionarParcela(this)">18x</button>
+                    <button class="parcela-btn" data-parcelas="24" onclick="selecionarParcela(this)">24x</button>
+                </div>
+                <div class="payment-details">
+                    <div class="payment-left"><p>Valor da parcela</p><span>Juros aprox. 0,81% a.m.</span></div>
+                    <div class="payment-right"><h3 id="display-parcela">R$ 877,86</h3><span id="display-total">Total: R$ 10.534,29</span></div>
+                </div>
+            </div>
+            <button onclick="navegar('cpf')" class="btn-continue">Continuar com <span id="btn-valor">R$ 10.000,00</span> <i class="fa-solid fa-arrow-right"></i></button>
+        </main>
+    </div>
+
+    <!-- ETAPA 3: CPF -->
+    <div id="step-cpf" class="step-container">
+        <header><div class="logo" onclick="navegar('home')">ecred<span>.</span></div><a class="back-link" onclick="navegar('valor')"><i class="fa-solid fa-arrow-left"></i> Voltar</a></header>
+        <div class="progress-container"><div class="progress-bar" style="width: 40%;"></div></div>
+        <main>
+            <div class="badge-simulacao">PASSO 2</div>
+            <h1>Informe seu CPF</h1>
+            <p class="subtitle">Precisamos do seu CPF para prosseguir com a análise.</p>
+            <div class="form-card">
+                <div class="input-group"><label>CPF</label><input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric"></div>
+                <div class="privacy-box"><i class="fa-solid fa-lock"></i><p>Consulta protegida e sem custo. Seus dados são usados apenas para a análise de crédito, conforme a LGPD.</p></div>
+            </div>
+            <button id="btn-continuar-cpf" onclick="navegar('confirmacao')" class="btn-continue disabled">Continuar <i class="fa-solid fa-arrow-right"></i></button>
+        </main>
+    </div>
+
+    <!-- ETAPA 4: CONFIRMAÇÃO -->
+    <div id="step-confirmacao" class="step-container">
+        <header><div class="logo" onclick="navegar('home')">ecred<span>.</span></div><a class="back-link" onclick="navegar('cpf')"><i class="fa-solid fa-arrow-left"></i> Voltar</a></header>
+        <div class="progress-container"><div class="progress-bar" style="width: 55%;"></div></div>
+        <main>
+            <div class="badge-simulacao">PASSO 3</div>
+            <h1>Confirme seus dados</h1>
+            <p class="subtitle">Confira se está tudo certo antes de continuar.</p>
+            <div class="form-card">
+                <div class="input-group"><label>Nome completo</label><input type="text" id="nome" value="Matheus Henrique Fontes Silveira"></div>
+                <div class="row">
+                    <div class="input-group"><label>Nascimento</label><input type="text" id="nascimento" value="10/05/2007" maxlength="10"></div>
+                    <div class="input-group"><label>CPF <i class="fa-solid fa-lock"></i></label><input type="text" id="cpf-confirm" value="101.662.745-93" readonly><span class="alterar-cpf" onclick="navegar('cpf')">Alterar CPF</span></div>
+                </div>
+                <div class="input-group"><label>Nome da mãe</label><input type="text" id="mae" placeholder="Nome completo da sua mãe"></div>
+                <div class="input-group"><label>Gênero</label>
+                    <div class="genero-group">
+                        <button type="button" class="genero-btn" onclick="selecionarGenero(this)">Feminino <span class="circle"></span></button>
+                        <button type="button" class="genero-btn active" onclick="selecionarGenero(this)">Masculino <span class="circle"></span></button>
+                    </div>
+                </div>
+                <div class="input-group"><label>Celular (WhatsApp)</label><input type="tel" id="celular" placeholder="(11) 91234-5678" maxlength="15"></div>
+            </div>
+            <button id="btn-continuar-confirmacao" onclick="navegar('dados')" class="btn-continue disabled">Continuar <i class="fa-solid fa-arrow-right"></i></button>
+        </main>
+    </div>
+
+    <!-- ETAPA 5: DADOS EMPRÉSTIMO -->
+    <div id="step-dados" class="step-container">
+        <header><div class="logo" onclick="navegar('home')">ecred<span>.</span></div><a class="back-link" onclick="navegar('confirmacao')"><i class="fa-solid fa-arrow-left"></i> Voltar</a></header>
+        <div class="progress-container"><div class="progress-bar" style="width: 70%;"></div></div>
+        <main>
+            <div class="badge-simulacao">PASSO 4</div>
+            <h1>Sobre o seu empréstimo</h1>
+            <p class="subtitle">Essas respostas nos ajudam a montar a melhor oferta para o seu perfil.</p>
+            <div class="form-card" style="padding: 0; background: transparent; box-shadow: none; border: none;">
+                <div class="form-card" style="margin-bottom: 15px; padding: 20px;">
+                    <label style="font-size: 15px; margin-bottom: 15px; display: block;">Qual o motivo do empréstimo?</label>
+                    <div class="options-list">
+                        <label class="option-item"><input type="radio" name="motivo" onchange="verificarDados()"> <span>Quitar dívidas</span><span class="custom-radio"></span></label>
+                        <label class="option-item"><input type="radio" name="motivo" onchange="verificarDados()"> <span>Reforma da casa</span><span class="custom-radio"></span></label>
+                        <label class="option-item"><input type="radio" name="motivo" onchange="verificarDados()"> <span>Capital de giro</span><span class="custom-radio"></span></label>
+                        <label class="option-item"><input type="radio" name="motivo" onchange="verificarDados()"> <span>Despesas médicas</span><span class="custom-radio"></span></label>
+                        <label class="option-item"><input type="radio" name="motivo" onchange="verificarDados()"> <span>Educação</span><span class="custom-radio"></span></label>
+                        <label class="option-item"><input type="radio" name="motivo" onchange="verificarDados()"> <span>Outro</span><span class="custom-radio"></span></label>
+                    </div>
+                </div>
+                <div class="form-card" style="margin-bottom: 15px; padding: 20px;">
+                    <label style="font-size: 15px; margin-bottom: 15px; display: block;">Qual a sua ocupação?</label>
+                    <div class="options-list">
+                        <label class="option-item"><input type="radio" name="ocupacao" onchange="verificarDados()"> <span>CLT</span><span class="custom-radio"></span></label>
+                        <label class="option-item"><input type="radio" name="ocupacao" onchange="verificarDados()"> <span>Autônomo(a)</span><span class="custom-radio"></span></label>
+                        <label class="option-item"><input type="radio" name="ocupacao" onchange="verificarDados()"> <span>Servidor(a) público</span><span class="custom-radio"></span></label>
+                        <label class="option-item"><input type="radio" name="ocupacao" onchange="verificarDados()"> <span>Aposentado(a)</span><span class="custom-radio"></span></label>
+                        <label class="option-item"><input type="radio" name="ocupacao" onchange="verificarDados()"> <span>Empresário(a)</span><span class="custom-radio"></span></label>
+                        <label class="option-item"><input type="radio" name="ocupacao" onchange="verificarDados()"> <span>Outro</span><span class="custom-radio"></span></label>
+                    </div>
+                </div>
+                <div class="form-card" style="margin-bottom: 15px; padding: 20px;">
+                    <label style="font-size: 15px; margin-bottom: 15px; display: block;">Seu nome está negativado?</label>
+                    <div class="row">
+                        <label class="option-item" style="justify-content: center;"><input type="radio" name="negativado" onchange="verificarDados()"> <span>Sim</span></label>
+                        <label class="option-item" style="justify-content: center;"><input type="radio" name="negativado" onchange="verificarDados()"> <span>Não</span></label>
+                        <label class="option-item" style="justify-content: center;"><input type="radio" name="negativado" onchange="verificarDados()"> <span>Não sei</span></label>
+                    </div>
+                </div>
+            </div>
+            <button id="btn-continuar-dados" onclick="navegar('renda')" class="btn-continue disabled">Continuar <i class="fa-solid fa-arrow-right"></i></button>
+        </main>
+    </div>
+
+    <!-- ETAPA 6: RENDA -->
+    <div id="step-renda" class="step-container">
+        <header><div class="logo" onclick="navegar('home')">ecred<span>.</span></div><a class="back-link" onclick="navegar('dados')"><i class="fa-solid fa-arrow-left"></i> Voltar</a></header>
+        <div class="progress-container"><div class="progress-bar" style="width: 80%;"></div></div>
+        <main>
+            <div class="badge-simulacao">PASSO 5</div>
+            <h1>Qual a sua renda?</h1>
+            <p class="subtitle">Isso nos ajuda a ajustar as parcelas ao seu orçamento.</p>
+            <div class="form-card">
+                <div class="input-group"><label>Quanto você recebe por mês?</label><input type="text" id="valor-renda" placeholder="R$ 0,00"></div>
+                <label class="checkbox-container" style="margin-bottom: 15px;">
+                    <input type="checkbox" id="sem-renda" onchange="toggleSemRenda()"><span class="checkmark"></span><span style="font-size: 14px; color: var(--text-gray);">Não possuo renda no momento</span>
+                </label>
+            </div>
+            <div class="form-card">
+                <div class="input-group"><label>Que dia você recebe?</label><span style="font-size: 12px; color: var(--text-gray); margin-bottom: 10px; display: block;">Digite o dia do salário ou benefício.</span><input type="text" id="dia-recebimento" placeholder="Ex: 5" maxlength="2" inputmode="numeric"></div>
+            </div>
+            <button id="btn-continuar-renda" onclick="navegar('analise')" class="btn-continue disabled">Continuar <i class="fa-solid fa-arrow-right"></i></button>
+        </main>
+    </div>
+
+    <!-- ETAPA 7: ANALISE -->
+    <div id="step-analise" class="step-container">
+        <main style="justify-content: center; height: 100vh;">
+            <div class="analysis-card">
+                <div class="circle-wrapper">
+                    <svg class="circle-svg" viewBox="0 0 120 120"><circle class="circle-bg" cx="60" cy="60" r="50"></circle><circle class="circle-progress" id="progress-circle" cx="60" cy="60" r="50"></circle></svg>
+                    <div class="circle-text"><h2 id="progress-text">0%</h2><span>ANALISANDO</span></div>
+                </div>
+                <h1 style="color: white; margin-bottom: 5px;">Analisando seu perfil</h1>
+                <p style="color: #9ca3af; font-size: 14px; margin-bottom: 30px;">Nossa inteligência está montando a sua melhor oferta.</p>
+                <div class="status-list">
+                    <div class="status-item" id="an-step-1"><div class="status-icon"><i class="fa-solid fa-check"></i></div>Validando identidade</div>
+                    <div class="status-item" id="an-step-2"><div class="status-icon"><i class="fa-solid fa-check"></i></div>Consultando score de crédito</div>
+                    <div class="status-item" id="an-step-3"><div class="status-icon"><i class="fa-solid fa-check"></i></div>Analisando capacidade de pagamento</div>
+                    <div class="status-item" id="an-step-4"><div class="status-icon"><i class="fa-solid fa-check"></i></div>Preparando sua melhor oferta</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ETAPA 8: APROVADO -->
+    <div id="step-aprovado" class="step-container">
+        <canvas id="confetti-canvas"></canvas>
+        <audio id="som-sucesso" src="sucesso.mp3"></audio>
+        <main style="justify-content: center; height: 100vh;">
+            <div class="approved-card">
+                <div class="icon-success"><i class="fa-solid fa-check"></i></div>
+                <p class="parabens"><i class="fa-solid fa-party-horn"></i> Parabéns, Matheus!</p>
+                <h1 style="color: white; font-size: 28px; margin-bottom: 10px;">Crédito aprovado</h1>
+                <p style="color: #d1d5db; font-size: 14px; margin-bottom: 30px;">Seu dinheiro está reservado e pronto para ser liberado na sua conta digital.</p>
+                <div class="details-box">
+                    <div class="valor-liberado"><p>Valor liberado</p><h2 id="aprovado-valor">R$ 10.000,00</h2></div>
+                    <div class="detail-row"><span>Parcelamento</span><strong id="aprovado-parcela">12x de R$ 877,86</strong></div>
+                    <div class="detail-row"><span>Prazo</span><strong id="aprovado-prazo">12 meses</strong></div>
+                    <div class="detail-row"><span>Liberação</span><strong>Imediata via PIX</strong></div>
+                </div>
+                <div class="benefits-list">
+                    <div class="benefit-item"><i class="fa-solid fa-circle-check"></i> Dinheiro na sua conta digital em minutos</div>
+                    <div class="benefit-item"><i class="fa-solid fa-circle-check"></i> Parcelas fixas do início ao fim</div>
+                    <div class="benefit-item"><i class="fa-solid fa-circle-check"></i> Sem tarifas ou taxas antecipadas</div>
+                </div>
+                <button onclick="navegar('dia')" class="btn-continue" style="width: 100%;">Continuar <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </main>
+    </div>
+
+    <!-- ETAPA 9: DIA -->
+    <div id="step-dia" class="step-container">
+        <header><div class="logo" onclick="navegar('home')">ecred<span>.</span></div><a class="back-link" onclick="navegar('aprovado')"><i class="fa-solid fa-arrow-left"></i> Voltar</a></header>
+        <div class="progress-container"><div class="progress-bar" style="width: 95%;"></div></div>
+        <main>
+            <div class="badge-simulacao">QUASE LÁ</div>
+            <h1>Melhor dia para pagar</h1>
+            <p class="subtitle">Escolha o dia do mês que combina com o seu orçamento.</p>
+            <div class="form-card">
+                <div class="days-grid">
+                    <label class="day-option" onclick="selecionarDia(this, 5)"><span class="day-number">5</span><span class="day-label">DIA</span></label>
+                    <label class="day-option" onclick="selecionarDia(this, 10)"><span class="day-number">10</span><span class="day-label">DIA</span></label>
+                    <label class="day-option" onclick="selecionarDia(this, 15)"><span class="day-number">15</span><span class="day-label">DIA</span></label>
+                    <label class="day-option" onclick="selecionarDia(this, 20)"><span class="day-number">20</span><span class="day-label">DIA</span></label>
+                    <label class="day-option" onclick="selecionarDia(this, 25)"><span class="day-number">25</span><span class="day-label">DIA</span></label>
+                    <label class="day-option" onclick="selecionarDia(this, 30)"><span class="day-number">30</span><span class="day-label">DIA</span></label>
+                </div>
+                <div class="due-date-box" id="due-box">
+                    <div class="due-icon"><i class="fa-regular fa-calendar-check"></i></div>
+                    <div class="due-text"><strong id="due-title">Vencimento todo dia 5</strong><span id="due-subtitle">1ª parcela em 05 de dezembro de 2026</span></div>
+                </div>
+            </div>
+            <button id="btn-continuar-dia" onclick="navegar('endereco')" class="btn-continue disabled">Continuar <i class="fa-solid fa-arrow-right"></i></button>
+        </main>
+    </div>
+
+    <!-- ETAPA 10: ENDEREÇO -->
+    <div id="step-endereco" class="step-container">
+        <header><div class="logo" onclick="navegar('home')">ecred<span>.</span></div><a class="back-link" onclick="navegar('dia')"><i class="fa-solid fa-arrow-left"></i> Voltar</a></header>
+        <div class="progress-container"><div class="progress-bar" style="width: 98%;"></div></div>
+        <main>
+            <div class="badge-simulacao">QUASE LÁ</div>
+            <h1>Endereço de cobrança</h1>
+            <p class="subtitle">Para onde enviamos o seu carnê e a documentação do contrato.</p>
+            <div class="form-card">
+                <div class="input-group"><label>CEP</label><input type="text" id="cep" placeholder="00000-000" maxlength="9" inputmode="numeric"></div>
+                <div id="extra-fields" style="display: none;">
+                    <div class="input-group"><label>Rua</label><input type="text" id="rua" placeholder="Nome da rua"></div>
+                    <div class="row">
+                        <div class="input-group"><label>Número</label><input type="text" id="numero" placeholder="123"></div>
+                        <div class="input-group"><label>Complemento</label><input type="text" id="complemento" placeholder="Opcional"></div>
+                    </div>
+                    <label class="checkbox-container" style="margin-bottom: 15px;"><input type="checkbox" id="sem-numero" onchange="toggleSemNumero()"><span class="checkmark"></span><span style="font-size: 12px; color: var(--text-gray);">Sem número</span></label>
+                    <div class="input-group"><label>Bairro</label><input type="text" id="bairro" placeholder="Seu bairro"></div>
+                    <div class="row" style="grid-template-columns: 2fr 1fr;">
+                        <div class="input-group"><label>Cidade</label><input type="text" id="cidade" placeholder="Sua cidade"></div>
+                        <div class="input-group"><label>UF</label><input type="text" id="uf" placeholder="SE" maxlength="2"></div>
+                    </div>
+                </div>
+            </div>
+            <button id="btn-continuar-endereco" onclick="navegar('conta')" class="btn-continue disabled">Continuar <i class="fa-solid fa-arrow-right"></i></button>
+        </main>
+    </div>
+
+    <!-- ETAPA 11: CONTA -->
+    <div id="step-conta" class="step-container">
+        <header><div class="logo" onclick="navegar('home')">ecred<span>.</span></div><a class="back-link" onclick="navegar('endereco')"><i class="fa-solid fa-arrow-left"></i> Voltar</a></header>
+        <div class="progress-container"><div class="progress-bar" style="width: 100%;"></div></div>
+        <main>
+            <div class="badge-simulacao">ÚLTIMO PASSO</div>
+            <h1>Crie sua conta digital</h1>
+            <p class="subtitle">É por ela que você acessa o saldo e realiza o saque via PIX.</p>
+            <div class="form-card">
+                <div class="input-group"><label>E-mail</label><input type="email" id="email-conta" placeholder="voce@email.com"></div>
+                <div class="input-group"><label>Senha</label><input type="password" id="senha-conta" placeholder="Crie uma senha"></div>
+            </div>
+            <button id="btn-continuar-conta" onclick="navegar('abrindo')" class="btn-continue disabled">Criar conta e acessar <i class="fa-solid fa-arrow-right"></i></button>
+        </main>
+    </div>
+
+    <!-- ETAPA 12: ABRINDO CONTA -->
+    <div id="step-abrindo" class="step-container">
+        <main style="justify-content: center; height: 100vh;">
+            <div class="logo" style="margin-bottom: 40px; text-align: center; color: white; font-size: 24px; font-weight: 800;">ecred.</div>
+            <div class="icon-container"><div class="spinner" id="abrindo-spinner"></div><i class="fa-solid fa-check check-icon" id="abrindo-check"></i></div>
+            <h1 id="abrindo-title" style="color: white; font-size: 22px; margin-bottom: 15px;">Estamos abrindo sua conta</h1>
+            <p id="abrindo-text" style="color: #9ca3af; font-size: 15px; margin-bottom: 40px; height: 22px;">Criando sua conta digital</p>
+            <div class="progress-bar-container"><div class="progress-bar-load" id="abrindo-progress"></div></div>
+            <div style="display: flex; gap: 8px; font-size: 12px; color: #6b7280;"><i class="fa-solid fa-shield-halved" style="color: var(--green-primary);"></i> Ambiente seguro e criptografado</div>
+        </main>
+    </div>
+
+    <!-- ETAPA 13: SEGURO -->
+    <div id="step-seguro" class="step-container">
+        <header><div class="logo">ecred<span>.</span></div><div class="badge-simulacao" style="margin-bottom:0; border: 1px solid var(--green-dark); padding: 5px 10px; border-radius: 20px;"><i class="fa-solid fa-lock"></i> Etapa final</div></header>
+        <main>
+            <div class="status-card">
+                <span class="status-badge">FALTA POUCO, MATHEUS</span>
+                <h1>Seu empréstimo está quase liberado</h1>
+                <p>Para liberar o PIX de <strong id="seguro-text-valor">R$ 20.000,00</strong> na sua conta, falta apenas contratar o seguro obrigatório do crédito.</p>
+                <div class="checklist">
+                    <div class="check-item"><i class="fa-solid fa-circle-check"></i> Empréstimo de <span id="seguro-text-checklist">R$ 20.000,00</span> aprovado</div>
+                    <div class="check-item"><i class="fa-solid fa-circle-check"></i> Conta digital criada</div>
+                    <div class="check-item active"><i class="fa-solid fa-circle-notch"></i> Contratar seguro do crédito</div>
+                </div>
+            </div>
+            <div class="section-header"><i class="fa-solid fa-shield-halved"></i> O que o seguro inclui</div>
+            <div class="benefit-card"><div class="benefit-icon"><i class="fa-regular fa-heart"></i></div><div class="benefit-text"><h4>Proteção em caso de morte ou invalidez</h4><p>Sua família nunca herda a dívida — o saldo é quitado pelo seguro.</p></div></div>
+            <div class="benefit-card"><div class="benefit-icon"><i class="fa-solid fa-bolt"></i></div><div class="benefit-text"><h4>Liberação imediata do valor</h4><p>Assim que o seguro é pago, o PIX cai na sua conta na hora.</p></div></div>
+            <div class="benefit-card"><div class="benefit-icon"><i class="fa-solid fa-briefcase"></i></div><div class="benefit-text"><h4>Proteção contra desemprego</h4><p>Perdeu o emprego? Suas parcelas ficam protegidas por até 6 meses.</p></div></div>
+            <div class="benefit-card"><div class="benefit-icon"><i class="fa-solid fa-rotate-left"></i></div><div class="benefit-text"><h4>100% reembolsável após a quitação</h4><p>Quitou o empréstimo? O valor do seguro volta integralmente para você.</p></div></div>
+            
+            <div class="section-header" style="margin-top: 40px;">Escolha sua cotação</div>
+            <p class="quote-subtitle">Cotações com valor extra liberam mais dinheiro na sua conta.</p>
+            
+            <div id="area-cotacao" style="width: 100%;">
+                <div class="quote-option active" onclick="selecionarSeguro(16, this)">
+                    <div class="quote-radio-circle"></div>
+                    <div class="quote-content">
+                        <div class="quote-top"><div class="quote-value"><span>Você receberá</span><h3 id="seguro-val-1">R$ 20.000,00</h3></div><div class="quote-price"><span>Seguro</span><strong>R$ 16,00</strong></div></div>
+                        <div class="quote-installment" id="seguro-parc-1">12x de R$ 877,86</div>
+                    </div>
+                </div>
+                <div class="quote-option" onclick="selecionarSeguro(29, this)">
+                    <div class="quote-radio-circle"></div>
+                    <div class="quote-content">
+                        <div class="quote-top"><div class="quote-value"><span>Você receberá</span><h3 id="seguro-val-2">R$ 22.000,00</h3></div><div class="quote-price"><span>Seguro</span><strong>R$ 29,00</strong></div></div>
+                        <div class="quote-installment" id="seguro-parc-2">12x de R$ 965,65</div>
+                    </div>
+                </div>
+                <div class="quote-option" onclick="selecionarSeguro(45, this)">
+                    <div class="quote-radio-circle"></div>
+                    <div class="quote-content">
+                        <div class="quote-top"><div class="quote-value"><span>Você receberá</span><h3 id="seguro-val-3">R$ 26.000,00</h3></div><div class="quote-price"><span>Seguro</span><strong>R$ 45,00</strong></div></div>
+                        <div class="quote-installment" id="seguro-parc-3">12x de R$ 1.141,21</div>
+                    </div>
+                </div>
+            </div>
+            <div class="content-spacer" style="height: 180px;"></div>
+        </main>
+        <div class="bottom-bar-fixed" id="bottom-bar-seguro">
+            <div style="font-size: 24px; font-weight: 800; color: var(--text-dark); margin-bottom: 5px;" id="seguro-total">R$ 16,00</div>
+            <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 15px;">Pagamento único, sem mensalidades</div>
+            <button class="btn-continue" onclick="navegar('digital')">Pagar seguro <i class="fa-solid fa-arrow-right"></i></button>
+            <div class="security-footer"><span><i class="fa-regular fa-circle-check"></i> Pagamento reconhecido automaticamente</span><span><i class="fa-solid fa-lock"></i> Processo 100% seguro</span></div>
+        </div>
+    </div>
+
+    <!-- ETAPA 14: DIGITAL (DASHBOARD) -->
+    <div id="step-digital" class="step-container" style="background-color: #000; color: white; padding: 20px;">
+        <div class="dashboard-header">
+            <div class="user-info">
+                <div class="avatar">M</div>
+                <div class="user-greeting"><span>Bem-vindo(a)</span><strong>Matheus</strong></div>
+            </div>
+            <div class="notification-btn"><i class="fa-solid fa-bell" style="color: var(--green-primary); font-size: 16px;"></i></div>
+        </div>
+        
+        <div class="balance-card">
+            <div class="balance-header"><div class="balance-brand"><strong>ecred.</strong><span>Conta</span></div><i class="fa-regular fa-eye eye-icon" id="btn-olho-dash"></i></div>
+            <div class="account-info"><span>Ag. 0001</span><span>Conta 70534-0</span></div>
+            <div class="balance-label">Saldo disponível</div>
+            <div class="balance-value" id="dash-saldo">R$ 20.000,00</div>
+        </div>
+        
+        <div class="quick-actions">
+            <div class="action-btn active" onclick="abrirModalSaque()"><div class="icon-circle"><i class="fa-solid fa-arrow-up"></i></div><span>Sacar PIX</span></div>
+            <div class="action-btn" onclick="abrirModalSaque()"><div class="icon-circle"><i class="fa-solid fa-barcode"></i></div><span>Pagar</span></div>
+            <div class="action-btn" onclick="abrirModalSaque()"><div class="icon-circle"><i class="fa-solid fa-arrow-right-arrow-left"></i></div><span>Transferir</span></div>
+            <div class="action-btn" onclick="abrirModalSaque()"><div class="icon-circle"><i class="fa-solid fa-file-lines"></i></div><span>Extrato</span></div>
+        </div>
+        
+        <button class="main-withdraw-btn" onclick="abrirModalSaque()"><div class="left-content"><i class="fa-solid fa-paper-plane"></i><span>Sacar meu dinheiro via PIX</span></div><i class="fa-solid fa-chevron-right"></i></button>
+        
+        <div class="section-title">Movimentações</div>
+        <div class="transaction-card">
+            <div class="transaction-left"><div class="transaction-icon"><i class="fa-solid fa-arrow-down"></i></div><div class="transaction-info"><strong>Empréstimo Ecred</strong><span>Valor liberado</span></div></div>
+            <div class="transaction-value"><strong id="dash-saldo-transacao">+ R$ 20.000,00</strong><span>Hoje</span></div>
+        </div>
+    </div>
+
+    <!-- MODAL DE SAQUE -->
+    <div class="modal-overlay" id="modal-saque">
+        <div class="modal-content">
+            <div class="modal-header"><h2>Sacar via PIX</h2><button class="close-btn" onclick="fecharModalSaque()"><i class="fa-solid fa-xmark"></i></button></div>
+            <label class="form-label">Valor do saque</label>
+            <div class="withdraw-value-box"><div><h3 id="modal-dash-saldo">R$ 20.000,00</h3><p>Todo o seu saldo disponível</p></div><span class="badge-total">TOTAL</span></div>
+            <label class="form-label">Seu banco</label>
+            <div class="modal-input-group">
+                <i class="fa-solid fa-magnifying-glass icon-left"></i>
+                <input type="text" id="input-banco" placeholder="Digite o nome do banco" autocomplete="off" onfocus="mostrarBancos()">
+                <i class="fa-solid fa-chevron-down icon-right"></i>
+                <div class="dropdown-menu" id="lista-bancos"></div>
+            </div>
+            <span class="helper-text">Selecione o banco onde você tem conta para receber o PIX.</span>
+            <label class="form-label">Tipo de chave PIX</label>
+            <div class="key-types-grid">
+                <button class="key-type-btn" onclick="selecionarChaveSaque(this, 'CPF')">CPF</button>
+                <button class="key-type-btn" onclick="selecionarChaveSaque(this, 'Telefone')">Telefone</button>
+                <button class="key-type-btn" onclick="selecionarChaveSaque(this, 'E-mail')">E-mail</button>
+                <button class="key-type-btn" onclick="selecionarChaveSaque(this, 'Aleatória')">Aleatória</button>
+            </div>
+            <label class="form-label">Sua chave PIX</label>
+            <div class="modal-input-group" style="margin-bottom: 5px;"><input type="text" id="input-chave-saque" placeholder="Escolha o tipo de chave acima" disabled></div>
+            <span class="helper-text" id="helper-chave">Primeiro escolha o tipo de chave acima.</span>
+            <button class="confirm-btn disabled" id="btn-confirmar-saque" onclick="confirmarSaque()">Confirmar saque</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE LOADING DO SAQUE -->
+    <div class="modal-loading" id="modal-loading-saque">
+        <div class="loading-content">
+            <div class="spinner-loading"></div>
+            <h3>Processando saque</h3>
+            <p>Validando sua solicitação de PIX...</p>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // SISTEMA DE NAVEGAÇÃO (SPA)
+        // ==========================================
+        function navegar(stepId) {
+            // Esconde todas as telas
+            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+            // Mostra a tela desejada
+            document.getElementById('step-' + stepId).classList.add('active');
+            
+            // Rola para o topo
+            window.scrollTo(0, 0);
+
+            // Roda scripts específicos de cada tela
+            if (stepId === 'valor') atualizarCalculosValor();
+            if (stepId === 'analise') iniciarAnalise();
+            if (stepId === 'aprovado') iniciarConfetes();
+            if (stepId === 'abrindo') iniciarAberturaConta();
+            if (stepId === 'seguro') atualizarSeguro();
+            if (stepId === 'digital') atualizarDashboard();
+        }
+
+        // ==========================================
+        // LÓGICA DA ETAPA 2 (VALOR)
+        // ==========================================
+        let valorEmprestimo = 10000;
+        let qtdParcelas = 12;
+        const taxaJurosMensal = 0.0081;
+
+        const formatarMoeda = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        function selecionarParcela(btn) {
+            document.querySelectorAll('.parcela-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            qtdParcelas = parseInt(btn.getAttribute('data-parcelas'));
+            atualizarCalculosValor();
+        }
+
+        function atualizarCalculosValor() {
+            const slider = document.getElementById('slider-valor');
+            if(!slider) return;
+            
+            const percent = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+            slider.style.setProperty('--percent', percent + '%');
+
+            valorEmprestimo = parseFloat(slider.value);
+            const valorFormatado = formatarMoeda(valorEmprestimo);
+            
+            document.getElementById('display-valor').textContent = valorFormatado;
+            document.getElementById('btn-valor').textContent = valorFormatado;
+
+            const i = taxaJurosMensal;
+            const n = qtdParcelas;
+            const fator = (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1);
+            const valorParcela = valorEmprestimo * fator;
+            const valorTotal = valorParcela * n;
+
+            document.getElementById('display-parcela').textContent = formatarMoeda(valorParcela);
+            document.getElementById('display-total').textContent = "Total: " + formatarMoeda(valorTotal);
+            
+            localStorage.setItem('ecred_valor', valorFormatado);
+            localStorage.setItem('ecred_parcela', formatarMoeda(valorParcela));
+            localStorage.setItem('ecred_prazo', n + ' meses');
+        }
+        document.getElementById('slider-valor')?.addEventListener('input', atualizarCalculosValor);
+
+        // ==========================================
+        // LÓGICA DE FORMULÁRIOS BÁSICOS (MÁSCARAS E VALIDAÇÕES)
+        // ==========================================
+        // CPF
+        document.getElementById('cpf')?.addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+            v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            e.target.value = v;
+            document.getElementById('btn-continuar-cpf').classList.toggle('disabled', v.length !== 14);
+        });
+
+        // Confirmação
+        function selecionarGenero(btn) {
+            document.querySelectorAll('.genero-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        function verificarConfirmacao() {
+            const nome = document.getElementById('nome').value;
+            const mae = document.getElementById('mae').value;
+            const cel = document.getElementById('celular').value;
+            document.getElementById('btn-continuar-confirmacao').classList.toggle('disabled', !(nome && mae && cel.length > 14));
+        }
+        document.getElementById('nome')?.addEventListener('input', verificarConfirmacao);
+        document.getElementById('mae')?.addEventListener('input', verificarConfirmacao);
+        document.getElementById('celular')?.addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+            if(v.length > 6) v = v.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            else if(v.length > 2) v = v.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+            e.target.value = v;
+            verificarConfirmacao();
+        });
+
+        // Dados
+        function verificarDados() {
+            const m = document.querySelector('input[name="motivo"]:checked');
+            const o = document.querySelector('input[name="ocupacao"]:checked');
+            const n = document.querySelector('input[name="negativado"]:checked');
+            document.getElementById('btn-continuar-dados').classList.toggle('disabled', !(m && o && n));
+        }
+
+        // Renda
+        function toggleSemRenda() {
+            const isChecked = document.getElementById('sem-renda').checked;
+            document.getElementById('valor-renda').disabled = isChecked;
+            document.getElementById('dia-recebimento').disabled = isChecked;
+            verificarRenda();
+        }
+        function verificarRenda() {
+            const semRenda = document.getElementById('sem-renda').checked;
+            const val = document.getElementById('valor-renda').value;
+            const dia = document.getElementById('dia-recebimento').value;
+            document.getElementById('btn-continuar-renda').classList.toggle('disabled', !(semRenda || (val.length > 3 && dia.length > 0)));
+        }
+        document.getElementById('valor-renda')?.addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\D/g, '');
+            v = (v / 100).toFixed(2) + '';
+            v = v.replace(".", ",").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+            e.target.value = 'R$ ' + v;
+            verificarRenda();
+        });
+        document.getElementById('dia-recebimento')?.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2);
+            verificarRenda();
+        });
+
+        // Dia
+        function selecionarDia(el, dia) {
+            document.querySelectorAll('.day-option').forEach(d => d.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('btn-continuar-dia').classList.remove('disabled');
+            document.getElementById('due-title').innerText = `Vencimento todo dia ${dia}`;
+            
+            const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+            const hoje = new Date();
+            let proxMes = hoje.getMonth() + 1;
+            let ano = hoje.getFullYear();
+            if(proxMes > 11) { proxMes = 0; ano++; }
+            document.getElementById('due-subtitle').innerText = `1ª parcela em ${String(dia).padStart(2, '0')} de ${meses[proxMes]} de ${ano}`;
+            document.getElementById('due-box').style.display = 'flex';
+        }
+
+        // Endereço (ViaCEP)
+        document.getElementById('cep')?.addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\D/g, '').slice(0, 8);
+            if(v.length > 5) v = v.replace(/(\d{5})(\d)/, '$1-$2');
+            e.target.value = v;
+            
+            if(v.length === 8) {
+                fetch(`https://viacep.com.br/ws/${v.replace('-','')}/json/`)
+                .then(r => r.json()).then(d => {
+                    if(!d.erro) {
+                        document.getElementById('rua').value = d.logradouro;
+                        document.getElementById('bairro').value = d.bairro;
+                        document.getElementById('cidade').value = d.localidade;
+                        document.getElementById('uf').value = d.uf;
+                        document.getElementById('extra-fields').style.display = 'block';
+                        verificarEndereco();
+                    }
+                }).catch(() => {
+                    // Fallback para teste local
+                    document.getElementById('rua').value = "Rua Teste";
+                    document.getElementById('bairro').value = "Centro";
+                    document.getElementById('cidade').value = "Aracaju";
+                    document.getElementById('uf').value = "SE";
+                    document.getElementById('extra-fields').style.display = 'block';
+                    verificarEndereco();
+                });
+            } else {
+                document.getElementById('extra-fields').style.display = 'none';
+            }
+        });
+        function toggleSemNumero() {
+            const checked = document.getElementById('sem-numero').checked;
+            document.getElementById('numero').disabled = checked;
+            if(checked) document.getElementById('numero').value = "S/N";
+            else document.getElementById('numero').value = "";
+            verificarEndereco();
+        }
+        function verificarEndereco() {
+            const cep = document.getElementById('cep').value;
+            const num = document.getElementById('numero').value;
+            document.getElementById('btn-continuar-endereco').classList.toggle('disabled', !(cep.length === 9 && num.length > 0));
+        }
+        ['numero', 'rua', 'bairro', 'cidade', 'uf'].forEach(id => document.getElementById(id)?.addEventListener('input', verificarEndereco));
+
+        // Conta
+        function verificarConta() {
+            const email = document.getElementById('email-conta').value;
+            const senha = document.getElementById('senha-conta').value;
+            const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            document.getElementById('btn-continuar-conta').classList.toggle('disabled', !(emailValido && senha.length >= 6));
+        }
+        document.getElementById('email-conta')?.addEventListener('input', verificarConta);
+        document.getElementById('senha-conta')?.addEventListener('input', verificarConta);
+
+
+        // ==========================================
+        // LÓGICA ETAPA 7 (ANALISANDO)
+        // ==========================================
+        function iniciarAnalise() {
+            let prog = 0;
+            const target = 100;
+            const circle = document.getElementById('progress-circle');
+            const text = document.getElementById('progress-text');
+            
+            const interval = setInterval(() => {
+                prog++;
+                text.innerText = prog + '%';
+                circle.style.strokeDashoffset = 314 - (prog / 100) * 314;
+
+                if(prog > 10 && prog < 30) document.getElementById('an-step-1').classList.add('active');
+                else if(prog >= 30 && prog < 50) { document.getElementById('an-step-1').className = "status-item completed"; document.getElementById('an-step-2').classList.add('active'); }
+                else if(prog >= 50 && prog < 80) { document.getElementById('an-step-2').className = "status-item completed"; document.getElementById('an-step-3').classList.add('active'); }
+                else if(prog >= 80 && prog < 100) { document.getElementById('an-step-3').className = "status-item completed"; document.getElementById('an-step-4').classList.add('active'); }
+                else if(prog >= 100) {
+                    document.getElementById('an-step-4').className = "status-item completed";
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        const val = localStorage.getItem('ecred_valor') || 'R$ 10.000,00';
+                        const parc = localStorage.getItem('ecred_parcela') || 'R$ 877,86';
+                        const praz = localStorage.getItem('ecred_prazo') || '12 meses';
+                        document.getElementById('aprovado-valor').innerText = val;
+                        document.getElementById('aprovado-parcela').innerText = `${praz.replace(' meses','')}x de ${parc}`;
+                        document.getElementById('aprovado-prazo').innerText = praz;
+                        navegar('aprovado');
+                    }, 1000);
+                }
+            }, 30);
+        }
+
+        // ==========================================
+        // LÓGICA ETAPA 8 (CONFETES)
+        // ==========================================
+        function iniciarConfetes() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const colors = ['#a3e635', '#65a30d', '#ffffff', '#d9f99d', '#3f6212'];
+            let confetti = [];
+            for (let i = 0; i < 150; i++) {
+                confetti.push({
+                    x: Math.random() * canvas.width, y: Math.random() * canvas.height - canvas.height,
+                    w: Math.random() * 10 + 5, h: Math.random() * 10 + 5, color: colors[Math.floor(Math.random() * colors.length)],
+                    speedY: Math.random() * 3 + 2, speedX: Math.random() * 2 - 1, rotation: Math.random() * 360, rotationSpeed: Math.random() * 10 - 5
+                });
+            }
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                confetti.forEach(c => {
+                    ctx.save(); ctx.translate(c.x + c.w / 2, c.y + c.h / 2); ctx.rotate(c.rotation * Math.PI / 180);
+                    ctx.fillStyle = c.color; ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); ctx.restore();
+                    c.y += c.speedY; c.x += c.speedX; c.rotation += c.rotationSpeed;
+                    if (c.y > canvas.height) { c.y = -20; c.x = Math.random() * canvas.width; }
+                });
+                if(document.getElementById('step-aprovado').classList.contains('active')) requestAnimationFrame(draw);
+            }
+            draw();
+            document.getElementById('som-sucesso')?.play().catch(e => {});
+        }
+
+        // ==========================================
+        // LÓGICA ETAPA 12 (ABRINDO CONTA)
+        // ==========================================
+        function iniciarAberturaConta() {
+            const bar = document.getElementById('abrindo-progress');
+            const text = document.getElementById('abrindo-text');
+            const spinner = document.getElementById('abrindo-spinner');
+            const check = document.getElementById('abrindo-check');
+            const title = document.getElementById('abrindo-title');
+
+            setTimeout(() => { bar.style.width = '50%'; text.innerText = "Configurando seu acesso"; }, 500);
+            setTimeout(() => { bar.style.width = '90%'; text.innerText = "Liberando seu saldo"; }, 3000);
+            setTimeout(() => {
+                bar.style.width = '100%'; text.innerText = "Redirecionando para o seu saldo.";
+                spinner.style.opacity = '0'; check.style.opacity = '1'; check.style.transform = 'scale(1)'; title.innerText = "Sua conta está pronta";
+            }, 5500);
+            setTimeout(() => { navegar('seguro'); }, 7500);
+        }
+
+        // ==========================================
+        // LÓGICA ETAPA 13 (SEGURO)
+        // ==========================================
+        function atualizarSeguro() {
+            const valStr = localStorage.getItem('ecred_valor') || 'R$ 20.000,00';
+            const valNum = parseFloat(valStr.replace('R$ ', '').replace(/\./g, '').replace(',', '.'));
+            
+            document.getElementById('seguro-text-valor').innerText = valStr;
+            document.getElementById('seguro-text-checklist').innerText = valStr;
+            
+            const calc = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            const calcParc = (v) => {
+                const i = 0.0081, n = 12;
+                return v * ((i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1));
+            };
+
+            document.getElementById('seguro-val-1').innerText = calc(valNum);
+            document.getElementById('seguro-parc-1').innerText = `12x de ${calc(calcParc(valNum))}`;
+            
+            document.getElementById('seguro-val-2').innerText = calc(valNum + 2000);
+            document.getElementById('seguro-parc-2').innerText = `12x de ${calc(calcParc(valNum + 2000))}`;
+            
+            document.getElementById('seguro-val-3').innerText = calc(valNum + 6000);
+            document.getElementById('seguro-parc-3').innerText = `12x de ${calc(calcParc(valNum + 6000))}`;
+
+            // Observer para mostrar a barra inferior
+            const observer = new IntersectionObserver((entries) => {
+                const bar = document.getElementById('bottom-bar-seguro');
+                if(entries[0].isIntersecting) bar.classList.add('visible');
+                else bar.classList.remove('visible');
+            }, { threshold: 0.1 });
+            observer.observe(document.getElementById('area-cotacao'));
+        }
+
+        function selecionarSeguro(v, el) {
+            document.querySelectorAll('.quote-option').forEach(o => o.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('seguro-total').innerText = formatarMoeda(v);
+            localStorage.setItem('ecred_seguro', v);
+        }
+
+        // ==========================================
+        // LÓGICA ETAPA 14 (DASHBOARD E SAQUE)
+        // ==========================================
+        let saldoVisivel = true;
+        function atualizarDashboard() {
+            const val = localStorage.getItem('ecred_valor') || 'R$ 20.000,00';
+            document.getElementById('dash-saldo').innerText = val;
+            document.getElementById('dash-saldo-transacao').innerText = '+ ' + val;
+            document.getElementById('modal-dash-saldo').innerText = val;
+
+            document.getElementById('btn-olho-dash').addEventListener('click', () => {
+                saldoVisivel = !saldoVisivel;
+                document.getElementById('dash-saldo').innerText = saldoVisivel ? val : '••••••';
+                document.getElementById('dash-saldo-transacao').innerText = saldoVisivel ? '+ ' + val : '••••••';
+                document.getElementById('modal-dash-saldo').innerText = saldoVisivel ? val : '••••••';
+                document.getElementById('btn-olho-dash').className = saldoVisivel ? 'fa-regular fa-eye eye-icon' : 'fa-regular fa-eye-slash eye-icon';
+            });
+        }
+
+        function abrirModalSaque() { document.getElementById('modal-saque').classList.add('active'); }
+        function fecharModalSaque() { document.getElementById('modal-saque').classList.remove('active'); document.getElementById('lista-bancos').classList.remove('active'); }
+
+        const bancos = ["Banco do Brasil", "Banco Santander", "Caixa Econômica Federal", "Banco Bradesco", "Itaú Unibanco", "Nubank", "Banco Inter", "C6 Bank", "PicPay", "Mercado Pago", "PagSeguro", "Banco Original", "BTG Pactual", "Sicredi", "Sicoob"];
+        function mostrarBancos() {
+            const list = document.getElementById('lista-bancos');
+            list.innerHTML = '';
+            bancos.forEach(b => {
+                const div = document.createElement('div');
+                div.className = 'bank-option';
+                div.innerText = b;
+                div.onclick = () => { document.getElementById('input-banco').value = b; list.classList.remove('active'); verificarSaque(); };
+                list.appendChild(div);
+            });
+            list.classList.add('active');
+        }
+
+        function selecionarChaveSaque(btn, tipo) {
+            document.querySelectorAll('.key-type-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const input = document.getElementById('input-chave-saque');
+            input.disabled = false;
+            input.focus();
+            input.value = "";
+            if(tipo === 'CPF') { input.placeholder = "000.000.000-00"; document.getElementById('helper-chave').innerText = "Digite seu CPF."; }
+            else if(tipo === 'Telefone') { input.placeholder = "(00) 00000-0000"; document.getElementById('helper-chave').innerText = "Digite seu telefone com DDD."; }
+            else if(tipo === 'E-mail') { input.placeholder = "seu@email.com"; document.getElementById('helper-chave').innerText = "Digite seu e-mail."; }
+            else { input.placeholder = "Digite sua chave aleatória"; document.getElementById('helper-chave').innerText = "Cole sua chave aleatória."; }
+        }
+
+        function verificarSaque() {
+            const b = document.getElementById('input-banco').value;
+            const c = document.getElementById('input-chave-saque').value;
+            document.getElementById('btn-confirmar-saque').classList.toggle('disabled', !(b.length > 0 && c.length > 4));
+        }
+        document.getElementById('input-chave-saque')?.addEventListener('input', verificarSaque);
+
+        function confirmarSaque() {
+            if(document.getElementById('btn-confirmar-saque').classList.contains('disabled')) return;
+            document.getElementById('modal-saque').classList.remove('active');
+            document.getElementById('modal-loading-saque').classList.add('active');
+            setTimeout(() => {
+                document.getElementById('modal-loading-saque').classList.remove('active');
+                alert("Saque solicitado com sucesso! (Fim do fluxo)");
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
