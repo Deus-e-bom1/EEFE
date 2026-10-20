@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Etapa Final - Seguro Ecred</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --green-primary: #a3e635;
+            --green-dark: #65a30d;
+            --bg-light: #f8faf8;
+            --bg-dark: #0a0f0c;
+            --text-dark: #111827;
+            --text-gray: #6b7280;
+            --white: #ffffff;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: 40px; /* Espaço extra para o conteúdo não ficar atrás da barra */
+        }
+
+        /* Header */
+        header {
+            background-color: var(--white);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--text-dark);
+            text-decoration: none;
+        }
+
+        .logo span { color: var(--green-dark); }
+
+        .etapa-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background-color: rgba(163, 230, 53, 0.1);
+            color: var(--green-dark);
+            border: 1px solid rgba(163, 230, 53, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Container Principal */
+        main {
+            flex: 1;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Card de Status (Verde Escuro) */
+        .status-card {
+            background-color: #0a170c;
+            border-radius: 20px;
+            padding: 25px;
+            color: var(--white);
+            margin-bottom: 30px;
+            border: 1px solid #1f2e18;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--green-primary);
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .status-card h1 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .status-card p {
+            font-size: 14px;
+            color: #9ca3af;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .status-card p strong {
+            color: var(--green-primary);
+        }
+
+        /* Lista de Etapas Concluídas */
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: #d1d5db;
+        }
+
+        .check-item i {
+            color: var(--green-primary);
+            font-size: 14px;
+        }
+
+        .check-item.active {
+            color: var(--white);
+        }
+
+        .check-item.active i {
+            color: #fbbf24;
+        }
+
+        /* Título das Seções */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            margin-top: 30px;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .section-header i {
+            color: var(--green-dark);
+        }
+
+        /* Card de Benefícios */
+        .benefit-card {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .benefit-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(163, 230, 53, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--green-dark);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .benefit-text h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--text-dark);
+        }
+
+        .benefit-text p {
+            font-size: 12px;
+            color: var(--text-gray);
+            line-height: 1.4;
+        }
+
+        /* Depoimentos */
+        .testimonial-card {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .testimonial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            background-color: #e5e7eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-gray);
+        }
+
+        .avatar.green { background-color: #d9f99d; color: #4d7c0f; }
+
+        .user-details strong {
+            display: block;
+            font-size: 13px;
+            color: var(--text-dark);
+        }
+
+        .user-details span {
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+
+        .stars {
+            color: #fbbf24;
+            font-size: 12px;
+        }
+
+        .testimonial-text {
+            font-size: 13px;
+            color: var(--text-gray);
+            font-style: italic;
+            line-height: 1.4;
+        }
+
+        /* Área de Cotações (O Seguro) */
+        .quote-subtitle {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+
+        .quote-option {
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        /* Esconde o input radio */
+        .quote-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Borda verde quando selecionado */
+        .quote-option.active {
+            border: 2px solid var(--green-dark);
+            background-color: #fcfdfa;
+        }
+
+        /* Bolinha customizada */
+        .quote-radio-circle {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            position: absolute;
+            left: 20px;
+            top: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .quote-option.active .quote-radio-circle {
+            border-color: var(--green-dark);
+        }
+
+        .quote-option.active .quote-radio-circle::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background-color: var(--green-dark);
+            border-radius: 50%;
+        }
+
+        .quote-content {
+            padding-left: 35px;
+        }
+
+        .quote-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .quote-value {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quote-value span {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-bottom: 2px;
+        }
+
+        .quote-value h3 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--green-dark);
+        }
+
+        .quote-price {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quote-price span {
+            font-size: 11px;
+            color: var(--text-gray);
+            margin-bottom: 2px;
+        }
+
+        .quote-price strong {
+            font-size: 16px;
+            color: var(--text-dark);
+        }
+
+        .quote-installment {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        /* =========================================
+           BOTÃO FLUTUANTE (ESCONDIDO POR PADRÃO)
+        ========================================= */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--bg-light);
+            padding: 15px 20px 25px;
+            border-top: 1px solid var(--border-color);
+            z-index: 100;
+            text-align: center;
+            
+            /* Animação de esconder/mostrar */
+            transform: translateY(100%);
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+        }
+
+        .bottom-bar.visible {
+            transform: translateY(0);
+        }
+
+        .total-price {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .total-price-label {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-bottom: 15px;
+        }
+
+        .btn-green {
+            background-color: var(--green-primary);
+            color: var(--text-dark);
+            text-decoration: none;
+            padding: 18px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(163, 230, 53, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-green:active {
+            transform: scale(0.98);
+        }
+
+        .security-footer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+
+        .content-spacer {
+            height: 160px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="#" class="logo">ecred<span>.</span></a>
+        <div class="etapa-badge">
+            <i class="fa-solid fa-lock"></i> Etapa final
+        </div>
+    </header>
+
+    <main>
+        <!-- CARD PRINCIPAL -->
+        <div class="status-card">
+            <span class="status-badge">FALTA POUCO, MATHEUS</span>
+            <h1>Seu empréstimo está quase liberado</h1>
+            <p>Para liberar o PIX de <strong id="text-valor-principal">R$ 20.000,00</strong> na sua conta, falta apenas contratar o seguro obrigatório do crédito.</p>
+            
+            <div class="checklist">
+                <div class="check-item">
+                    <i class="fa-solid fa-circle-check"></i> Empréstimo de <span id="text-valor-checklist">R$ 20.000,00</span> aprovado
+                </div>
+                <div class="check-item">
+                    <i class="fa-solid fa-circle-check"></i> Conta digital criada
+                </div>
+                <div class="check-item active">
+                    <i class="fa-solid fa-circle-notch"></i> Contratar seguro do crédito
+                </div>
+            </div>
+        </div>
+
+        <!-- BENEFÍCIOS -->
+        <div class="section-header">
+            <i class="fa-solid fa-shield-halved"></i> O que o seguro inclui
+        </div>
+        
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fa-regular fa-heart"></i></div>
+            <div class="benefit-text">
+                <h4>Proteção em caso de morte ou invalidez</h4>
+                <p>Sua família nunca herda a dívida — o saldo é quitado pelo seguro.</p>
+            </div>
+        </div>
+
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fa-solid fa-bolt"></i></div>
+            <div class="benefit-text">
+                <h4>Liberação imediata do valor</h4>
+                <p>Assim que o seguro é pago, o PIX cai na sua conta na hora.</p>
+            </div>
+        </div>
+
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fa-solid fa-briefcase"></i></div>
+            <div class="benefit-text">
+                <h4>Proteção contra desemprego</h4>
+                <p>Perdeu o emprego? Suas parcelas ficam protegidas por até 6 meses.</p>
+            </div>
+        </div>
+
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fa-solid fa-rotate-left"></i></div>
+            <div class="benefit-text">
+                <h4>100% reembolsável após a quitação</h4>
+                <p>Quitou o empréstimo? O valor do seguro volta integralmente para você.</p>
+            </div>
+        </div>
+
+        <!-- DEPOIMENTOS -->
+        <div class="section-header" style="margin-top: 40px;">
+            Quem contratou, aprovou
+        </div>
+
+        <div class="testimonial-card">
+            <div class="testimonial-header">
+                <div class="user-info">
+                    <div class="avatar green">AP</div>
+                    <div class="user-details">
+                        <strong>Ana Paula M.</strong>
+                        <span>São Paulo, SP</span>
+                    </div>
+                </div>
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+            </div>
+            <p class="testimonial-text">"Fiquei insegura no início, mas paguei o seguro e o dinheiro caiu no meu PIX em poucos minutos. Recomendo demais!"</p>
+        </div>
+
+        <div class="testimonial-card">
+            <div class="testimonial-header">
+                <div class="user-info">
+                    <div class="avatar">CE</div>
+                    <div class="user-details">
+                        <strong>Carlos Eduardo R.</strong>
+                        <span>Fortaleza, CE</span>
+                    </div>
+                </div>
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+            </div>
+            <p class="testimonial-text">"Estava negativado e mesmo assim consegui. O seguro me deu tranquilidade e o valor foi liberado na hora."</p>
+        </div>
+
+        <!-- COTAÇÕES DO SEGURO -->
+        <!-- ID adicionado aqui para o observador de scroll detectar quando chegar nesta área -->
+        <div id="area-cotacao">
+            <div class="section-header" style="margin-top: 40px;">
+                Escolha sua cotação
+            </div>
+            <p class="quote-subtitle">Cotações com valor extra liberam mais dinheiro na sua conta.</p>
+
+            <!-- Opção 1 -->
+            <label class="quote-option active" id="opt-1" onclick="selecionarSeguro(16, this)">
+                <input type="radio" name="seguro" value="16" checked>
+                <div class="quote-radio-circle"></div>
+                <div class="quote-content">
+                    <div class="quote-top">
+                        <div class="quote-value">
+                            <span>Você receberá</span>
+                            <h3 id="quote-valor-1">R$ 20.000,00</h3>
+                        </div>
+                        <div class="quote-price">
+                            <span>Seguro</span>
+                            <strong>R$ 16,00</strong>
+                        </div>
+                    </div>
+                    <div class="quote-installment" id="quote-parcela-1">12x de R$ 877,86</div>
+                </div>
+            </label>
+
+            <!-- Opção 2 -->
+            <label class="quote-option" id="opt-2" onclick="selecionarSeguro(29, this)">
+                <input type="radio" name="seguro" value="29">
+                <div class="quote-radio-circle"></div>
+                <div class="quote-content">
+                    <div class="quote-top">
+                        <div class="quote-value">
+                            <span>Você receberá</span>
+                            <h3 id="quote-valor-2">R$ 22.000,00</h3>
+                        </div>
+                        <div class="quote-price">
+                            <span>Seguro</span>
+                            <strong>R$ 29,00</strong>
+                        </div>
+                    </div>
+                    <div class="quote-installment" id="quote-parcela-2">12x de R$ 965,65</div>
+                </div>
+            </label>
+
+            <!-- Opção 3 -->
+            <label class="quote-option" id="opt-3" onclick="selecionarSeguro(45, this)">
+                <input type="radio" name="seguro" value="45">
+                <div class="quote-radio-circle"></div>
+                <div class="quote-content">
+                    <div class="quote-top">
+                        <div class="quote-value">
+                            <span>Você receberá</span>
+                            <h3 id="quote-valor-3">R$ 26.000,00</h3>
+                        </div>
+                        <div class="quote-price">
+                            <span>Seguro</span>
+                            <strong>R$ 45,00</strong>
+                        </div>
+                    </div>
+                    <div class="quote-installment" id="quote-parcela-3">12x de R$ 1.141,21</div>
+                </div>
+            </label>
+        </div>
+
+        <div class="content-spacer"></div>
+    </main>
+
+    <!-- BOTÃO FIXO INFERIOR -->
+    <div class="bottom-bar" id="bottom-bar">
+        <div class="total-price" id="display-total">R$ 16,00</div>
+        <div class="total-price-label">Pagamento único, sem mensalidades</div>
+        
+        <button class="btn-green" id="btn-pagar">
+            Pagar seguro <i class="fa-solid fa-arrow-right"></i>
+        </button>
+        
+        <div class="security-footer">
+            <span><i class="fa-regular fa-circle-check"></i> Pagamento reconhecido automaticamente</span>
+            <span><i class="fa-solid fa-lock"></i> Processo 100% seguro</span>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. PUXAR O VALOR DA ETAPA 2
+        // ==========================================
+        const valorOriginalStr = localStorage.getItem('ecred_valor') || 'R$ 20.000,00';
+        const valorNumerico = parseFloat(valorOriginalStr.replace('R$ ', '').replace(/\./g, '').replace(',', '.'));
+
+        document.getElementById('text-valor-principal').innerText = valorOriginalStr;
+        document.getElementById('text-valor-checklist').innerText = valorOriginalStr;
+
+        function formatarReal(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        // ==========================================
+        // 2. CÁLCULO DAS PARCELAS
+        // ==========================================
+        const taxaJuros = 0.0081;
+        const meses = 12;
+
+        function calcularParcela(valorEmprestimo) {
+            const fator = (taxaJuros * Math.pow(1 + taxaJuros, meses)) / (Math.pow(1 + taxaJuros, meses) - 1);
+            return valorEmprestimo * fator;
+        }
+
+        // Opção 1
+        document.getElementById('quote-valor-1').innerText = formatarReal(valorNumerico);
+        document.getElementById('quote-parcela-1').innerText = `12x de ${formatarReal(calcularParcela(valorNumerico))}`;
+
+        // Opção 2
+        const valorOpcao2 = valorNumerico + 2000;
+        document.getElementById('quote-valor-2').innerText = formatarReal(valorOpcao2);
+        document.getElementById('quote-parcela-2').innerText = `12x de ${formatarReal(calcularParcela(valorOpcao2))}`;
+
+        // Opção 3
+        const valorOpcao3 = valorNumerico + 6000;
+        document.getElementById('quote-valor-3').innerText = formatarReal(valorOpcao3);
+        document.getElementById('quote-parcela-3').innerText = `12x de ${formatarReal(calcularParcela(valorOpcao3))}`;
+
+        // ==========================================
+        // 3. LÓGICA DE SELEÇÃO DO SEGURO (CORRIGIDA)
+        // ==========================================
+        let valorSeguroAtual = 16;
+
+        // Função chamada quando o usuário clica em qualquer parte do card do seguro
+        function selecionarSeguro(valorSeguro, elementoClicado) {
+            valorSeguroAtual = valorSeguro;
+            
+            // Atualiza o texto do botão inferior
+            document.getElementById('display-total').innerText = formatarReal(valorSeguro);
+
+            // Remove a classe 'active' de todas as opções
+            document.querySelectorAll('.quote-option').forEach(opt => opt.classList.remove('active'));
+
+            // Adiciona a classe 'active' no card que foi clicado
+            elementoClicado.classList.add('active');
+
+            // Marca o input radio "escondido" como checado
+            elementoClicado.querySelector('input[type="radio"]').checked = true;
+
+            // Salva a escolha
+            localStorage.setItem('ecred_seguro', valorSeguro);
+        }
+
+        // ==========================================
+        // 4. BOTÃO FIXO: MOSTRAR APENAS QUANDO CHEGAR NA COTAÇÃO
+        // ==========================================
+        const bottomBar = document.getElementById('bottom-bar');
+        const areaCotacao = document.getElementById('area-cotacao');
+
+        // Usando IntersectionObserver (API nativa do navegador para verificar scroll)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Se a área de cotação está visível na tela, mostra a barra
+                    bottomBar.classList.add('visible');
+                } else {
+                    // Se rolou para fora, esconde a barra
+                    bottomBar.classList.remove('visible');
+                }
+            });
+        }, { threshold: 0.1 }); // Mostra quando 10% da seção estiver visível
+
+        observer.observe(areaCotacao);
+
+        // ==========================================
+        // 5. AÇÃO DO BOTÃO "PAGAR SEGURO"
+        // ==========================================
+        document.getElementById('btn-pagar').addEventListener('click', () => {
+            // window.location.href = "proxima_etapa.html";
+            alert(`Você escolheu o seguro de R$ ${valorSeguroAtual},00. Redirecionando para o pagamento...`);
+        });
+    </script>
+</body>
+</html>
