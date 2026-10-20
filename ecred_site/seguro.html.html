@@ -141,4 +141,35 @@
         document.getElementById('seguro-text-checklist').innerText = valorFinalString;
 
         function formatarReal(valor) { 
-            return valor.toLocaleString('pt-BR', { style:
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
+        }
+
+        const taxaJuros = 0.0081; 
+        const meses = 12;
+        function calcularParcela(v) { 
+            const fator = (taxaJuros * Math.pow(1 + taxaJuros, meses)) / (Math.pow(1 + taxaJuros, meses) - 1); 
+            return v * fator; 
+        }
+
+        document.getElementById('quote-valor-1').innerText = formatarReal(valorNumerico);
+        document.getElementById('quote-parcela-1').innerText = `12x de ${formatarReal(calcularParcela(valorNumerico))}`;
+        document.getElementById('quote-valor-2').innerText = formatarReal(valorNumerico + 2000);
+        document.getElementById('quote-parcela-2').innerText = `12x de ${formatarReal(calcularParcela(valorNumerico + 2000))}`;
+        document.getElementById('quote-valor-3').innerText = formatarReal(valorNumerico + 6000);
+        document.getElementById('quote-parcela-3').innerText = `12x de ${formatarReal(calcularParcela(valorNumerico + 6000))}`;
+
+        function selecionarSeguro(valor, el) {
+            document.getElementById('display-total').innerText = formatarReal(valor);
+            document.querySelectorAll('.quote-option').forEach(o => o.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            const bar = document.getElementById('bottom-bar');
+            if(entries[0].isIntersecting) bar.classList.add('visible');
+            else bar.classList.remove('visible');
+        }, { threshold: 0.1 });
+        observer.observe(document.getElementById('area-cotacao'));
+    </script>
+</body>
+</html>
