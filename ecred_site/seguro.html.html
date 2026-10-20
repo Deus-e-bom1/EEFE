@@ -108,26 +108,62 @@
         <div class="security-footer"><span><i class="fa-regular fa-circle-check"></i> Pagamento reconhecido automaticamente</span><span><i class="fa-solid fa-lock"></i> Processo 100% seguro</span></div>
     </div>
     <script>
-        let valorOriginalStr = localStorage.getItem('ecred_valor') || 'R$ 20.000,00';
-        if (!valorOriginalStr || valorOriginalStr === '') valorOriginalStr = 'R$ 20.000,00';
-        let valorNumerico = parseFloat(valorOriginalStr.replace('R$ ', '').replace(/\./g, '').replace(',', '.'));
-        if (isNaN(valorNumerico)) { valorNumerico = 20000; valorOriginalStr = 'R$ 20.000,00'; }
-        document.getElementById('seguro-text-valor').innerText = valorOriginalStr;
-        document.getElementById('seguro-text-checklist').innerText = valorOriginalStr;
-        function formatarReal(valor) { return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
-        const taxaJuros = 0.0081; const meses = 12;
-        function calcularParcela(valorEmprestimo) { const fator = (taxaJuros * Math.pow(1 + taxaJuros, meses)) / (Math.pow(1 + taxaJuros, meses) - 1); return valorEmprestimo * fator; }
+        // ==========================================
+        // PUXANDO O VALOR COM SEGURANÇA
+        // ==========================================
+        let valorSalvo = localStorage.getItem('ecred_valor');
+        
+        // Se estiver vazio ou nulo, define o padrão de 20.000
+        if (!valorSalvo || valorSalvo === "undefined" || valorSalvo === null) {
+            valorSalvo = 'R$ 20.000,00';
+        }
+
+        // Limpa a string e converte para número (ex: "R$ 20.000,00" vira 20000)
+        let valorNumerico = parseFloat(valorSalvo.replace('R$ ', '').replace(/\./g, '').replace(',', '.'));
+        
+        // Se a conversão der erro (NaN), força 20000
+        if (isNaN(valorNumerico)) {
+            valorNumerico = 20000;
+            valorSalvo = 'R$ 20.000,00';
+        }
+
+        // Atualiza os textos na tela com o valor correto
+        document.getElementById('seguro-text-valor').innerText = valorSalvo;
+        document.getElementById('seguro-text-checklist').innerText = valorSalvo;
+        
+        // Função para formatar número para R$
+        function formatarReal(valor) { 
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
+        }
+
+        // Cálculo da parcela (Juros de 0.81% ao mês em 12x)
+        const taxaJuros = 0.0081; 
+        const meses = 12;
+        function calcularParcela(valorEmprestimo) { 
+            const fator = (taxaJuros * Math.pow(1 + taxaJuros, meses)) / (Math.pow(1 + taxaJuros, meses) - 1); 
+            return valorEmprestimo * fator; 
+        }
+
+        // Opção 1
         document.getElementById('quote-valor-1').innerText = formatarReal(valorNumerico);
         document.getElementById('quote-parcela-1').innerText = `12x de ${formatarReal(calcularParcela(valorNumerico))}`;
+
+        // Opção 2
         document.getElementById('quote-valor-2').innerText = formatarReal(valorNumerico + 2000);
         document.getElementById('quote-parcela-2').innerText = `12x de ${formatarReal(calcularParcela(valorNumerico + 2000))}`;
+
+        // Opção 3
         document.getElementById('quote-valor-3').innerText = formatarReal(valorNumerico + 6000);
         document.getElementById('quote-parcela-3').innerText = `12x de ${formatarReal(calcularParcela(valorNumerico + 6000))}`;
+
+        // Lógica de selecionar a cotação
         function selecionarSeguro(valor, el) {
             document.getElementById('display-total').innerText = formatarReal(valor);
             document.querySelectorAll('.quote-option').forEach(o => o.classList.remove('active'));
             el.classList.add('active');
         }
+
+        // Mostrar a barra inferior apenas quando a área de cotação estiver visível
         const observer = new IntersectionObserver((entries) => {
             const bar = document.getElementById('bottom-bar');
             if(entries[0].isIntersecting) bar.classList.add('visible');
