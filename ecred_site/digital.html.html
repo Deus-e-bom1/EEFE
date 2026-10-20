@@ -197,16 +197,15 @@
         }
         document.getElementById('input-chave').addEventListener('input', verificar);
 
-               function confirmarSaque() {
+        // CORREÇÃO DO REDIRECIONAMENTO AQUI
+        function confirmarSaque() {
             if(document.getElementById('btn-confirmar').classList.contains('disabled')) return;
             
-            // Esconde o modal de saque e mostra o de loading
             document.getElementById('modal-saque').classList.remove('active');
             document.getElementById('modal-loading').classList.add('active');
             
-            // Aguarda 3.5 segundos (tempo do loading) e vai para a tela do seguro
             setTimeout(() => {
-                window.location.href = 'seguro.html';
+                window.location.href = 'seguro.html'; 
             }, 3500);
         }
     </script>
