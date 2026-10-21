@@ -62,9 +62,9 @@
         <div class="status-card">
             <span class="status-badge">FALTA POUCO, MATHEUS</span>
             <h1>Seu empréstimo está quase liberado</h1>
-            <p>Para liberar o PIX de <strong id="seguro-text-valor">Carregando...</strong> na sua conta, falta apenas contratar o seguro obrigatório do crédito.</p>
+            <p>Para liberar o PIX de <strong id="seguro-text-valor">R$ 20.000,00</strong> na sua conta, falta apenas contratar o seguro obrigatório do crédito.</p>
             <div class="checklist">
-                <div class="check-item"><i class="fa-solid fa-circle-check"></i> Empréstimo de <span id="seguro-text-checklist">Carregando...</span> aprovado</div>
+                <div class="check-item"><i class="fa-solid fa-circle-check"></i> Empréstimo de <span id="seguro-text-checklist">R$ 20.000,00</span> aprovado</div>
                 <div class="check-item"><i class="fa-solid fa-circle-check"></i> Conta digital criada</div>
                 <div class="check-item active"><i class="fa-solid fa-circle-notch"></i> Contratar seguro do crédito</div>
             </div>
@@ -80,22 +80,22 @@
             <div class="quote-option active" onclick="selecionarSeguro(16, this)">
                 <div class="quote-radio-circle"></div>
                 <div class="quote-content">
-                    <div class="quote-top"><div class="quote-value"><span>Você receberá</span><h3 id="quote-valor-1">...</h3></div><div class="quote-price"><span>Seguro</span><strong>R$ 16,00</strong></div></div>
-                    <div class="quote-installment" id="quote-parcela-1">...</div>
+                    <div class="quote-top"><div class="quote-value"><span>Você receberá</span><h3 id="quote-valor-1">R$ 20.000,00</h3></div><div class="quote-price"><span>Seguro</span><strong>R$ 16,00</strong></div></div>
+                    <div class="quote-installment" id="quote-parcela-1">12x de R$ 877,86</div>
                 </div>
             </div>
             <div class="quote-option" onclick="selecionarSeguro(29, this)">
                 <div class="quote-radio-circle"></div>
                 <div class="quote-content">
-                    <div class="quote-top"><div class="quote-value"><span>Você receberá</span><h3 id="quote-valor-2">...</h3></div><div class="quote-price"><span>Seguro</span><strong>R$ 29,00</strong></div></div>
-                    <div class="quote-installment" id="quote-parcela-2">...</div>
+                    <div class="quote-top"><div class="quote-value"><span>Você receberá</span><h3 id="quote-valor-2">R$ 22.000,00</h3></div><div class="quote-price"><span>Seguro</span><strong>R$ 29,00</strong></div></div>
+                    <div class="quote-installment" id="quote-parcela-2">12x de R$ 965,65</div>
                 </div>
             </div>
             <div class="quote-option" onclick="selecionarSeguro(45, this)">
                 <div class="quote-radio-circle"></div>
                 <div class="quote-content">
-                    <div class="quote-top"><div class="quote-value"><span>Você receberá</span><h3 id="quote-valor-3">...</h3></div><div class="quote-price"><span>Seguro</span><strong>R$ 45,00</strong></div></div>
-                    <div class="quote-installment" id="quote-parcela-3">...</div>
+                    <div class="quote-top"><div class="quote-value"><span>Você receberá</span><h3 id="quote-valor-3">R$ 26.000,00</h3></div><div class="quote-price"><span>Seguro</span><strong>R$ 45,00</strong></div></div>
+                    <div class="quote-installment" id="quote-parcela-3">12x de R$ 1.141,21</div>
                 </div>
             </div>
         </div>
@@ -108,62 +108,50 @@
         <div class="security-footer"><span><i class="fa-regular fa-circle-check"></i> Pagamento reconhecido automaticamente</span><span><i class="fa-solid fa-lock"></i> Processo 100% seguro</span></div>
     </div>
     <script>
-        // 1. Tenta pegar da URL
-        const urlParams = new URLSearchParams(window.location.search);
-        let valorDaUrl = urlParams.get('valor');
-
-        // 2. Se não tiver na URL, tenta pegar do localStorage (caso a pessoa tenha recarregado)
-        let valorDoStorage = localStorage.getItem('ecred_valor');
-
-        // 3. Define qual usar, com fallback para 20000
-        let valorFinalString = '';
+        // Recupera os dados do localStorage
+        const valorStr = localStorage.getItem('ecred_valor') || 'R$ 20.000,00';
+        const parcelasQtd = parseInt(localStorage.getItem('ecred_parcelas')) || 12;
+        const prazoStr = localStorage.getItem('ecred_prazo') || '12 meses';
         
-        if (valorDaUrl) {
-            // Se veio da URL, já é um número puro (ex: 15000)
-            let num = parseFloat(valorDaUrl);
-            if(isNaN(num)) num = 20000;
-            valorFinalString = num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        } else if (valorDoStorage) {
-            valorFinalString = valorDoStorage;
-        } else {
-            valorFinalString = 'R$ 20.000,00';
-        }
+        // Converte a string "R$ 20.000,00" para o número 20000
+        let valorNumerico = parseFloat(valorStr.replace('R$ ', '').replace(/\./g, '').replace(',', '.'));
+        if (isNaN(valorNumerico)) { valorNumerico = 20000; }
 
-        // Converte a string final para número puro para calcular
-        let valorNumerico = parseFloat(valorFinalString.replace('R$ ', '').replace(/\./g, '').replace(',', '.'));
-        if (isNaN(valorNumerico)) {
-            valorNumerico = 20000;
-            valorFinalString = 'R$ 20.000,00';
-        }
+        // Atualiza os textos na tela
+        document.getElementById('seguro-text-valor').innerText = valorStr;
+        document.getElementById('seguro-text-checklist').innerText = valorStr;
 
-        // Atualiza a tela
-        document.getElementById('seguro-text-valor').innerText = valorFinalString;
-        document.getElementById('seguro-text-checklist').innerText = valorFinalString;
+        function formatarReal(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
 
-        function formatarReal(valor) { 
-            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
-        }
-
+        // Calcula a parcela com a quantidade de parcelas escolhida
         const taxaJuros = 0.0081; 
-        const meses = 12;
-        function calcularParcela(v) { 
-            const fator = (taxaJuros * Math.pow(1 + taxaJuros, meses)) / (Math.pow(1 + taxaJuros, meses) - 1); 
-            return v * fator; 
+        function calcularParcela(valorEmprestimo, n) { 
+            const fator = (taxaJuros * Math.pow(1 + taxaJuros, n)) / (Math.pow(1 + taxaJuros, n) - 1); 
+            return valorEmprestimo * fator; 
         }
 
+        // Opção 1
         document.getElementById('quote-valor-1').innerText = formatarReal(valorNumerico);
-        document.getElementById('quote-parcela-1').innerText = `12x de ${formatarReal(calcularParcela(valorNumerico))}`;
-        document.getElementById('quote-valor-2').innerText = formatarReal(valorNumerico + 2000);
-        document.getElementById('quote-parcela-2').innerText = `12x de ${formatarReal(calcularParcela(valorNumerico + 2000))}`;
-        document.getElementById('quote-valor-3').innerText = formatarReal(valorNumerico + 6000);
-        document.getElementById('quote-parcela-3').innerText = `12x de ${formatarReal(calcularParcela(valorNumerico + 6000))}`;
+        document.getElementById('quote-parcela-1').innerText = `${parcelasQtd}x de ${formatarReal(calcularParcela(valorNumerico, parcelasQtd))}`;
 
+        // Opção 2
+        const valorOpcao2 = valorNumerico + 2000;
+        document.getElementById('quote-valor-2').innerText = formatarReal(valorOpcao2);
+        document.getElementById('quote-parcela-2').innerText = `${parcelasQtd}x de ${formatarReal(calcularParcela(valorOpcao2, parcelasQtd))}`;
+
+        // Opção 3
+        const valorOpcao3 = valorNumerico + 6000;
+        document.getElementById('quote-valor-3').innerText = formatarReal(valorOpcao3);
+        document.getElementById('quote-parcela-3').innerText = `${parcelasQtd}x de ${formatarReal(calcularParcela(valorOpcao3, parcelasQtd))}`;
+
+        // Função de seleção
         function selecionarSeguro(valor, el) {
             document.getElementById('display-total').innerText = formatarReal(valor);
             document.querySelectorAll('.quote-option').forEach(o => o.classList.remove('active'));
             el.classList.add('active');
         }
 
+        // Mostrar a barra inferior apenas na área de cotação
         const observer = new IntersectionObserver((entries) => {
             const bar = document.getElementById('bottom-bar');
             if(entries[0].isIntersecting) bar.classList.add('visible');
