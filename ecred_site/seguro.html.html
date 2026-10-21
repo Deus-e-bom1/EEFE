@@ -108,55 +108,99 @@
         <div class="security-footer"><span><i class="fa-regular fa-circle-check"></i> Pagamento reconhecido automaticamente</span><span><i class="fa-solid fa-lock"></i> Processo 100% seguro</span></div>
     </div>
     <script>
-        // Recupera os dados do localStorage
-        const valorStr = localStorage.getItem('ecred_valor') || 'R$ 20.000,00';
-        const parcelasQtd = parseInt(localStorage.getItem('ecred_parcelas')) || 12;
-        const prazoStr = localStorage.getItem('ecred_prazo') || '12 meses';
+        // ==========================================
+        // CORREÇÃO: LEITURA E CONVERSÃO DO VALOR
+        // ==========================================
+        // 1. Recupera a string salva (ex: "R$ 4.000,00")
+        let valorString = localStorage.getItem('ecred_valor');
         
-        // Converte a string "R$ 20.000,00" para o número 20000
-        let valorNumerico = parseFloat(valorStr.replace('R$ ', '').replace(/\./g, '').replace(',', '.'));
-        if (isNaN(valorNumerico)) { valorNumerico = 20000; }
-
-        // Atualiza os textos na tela
-        document.getElementById('seguro-text-valor').innerText = valorStr;
-        document.getElementById('seguro-text-checklist').innerText = valorStr;
-
-        function formatarReal(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
-
-        // Calcula a parcela com a quantidade de parcelas escolhida
-        const taxaJuros = 0.0081; 
-        function calcularParcela(valorEmprestimo, n) { 
-            const fator = (taxaJuros * Math.pow(1 + taxaJuros, n)) / (Math.pow(1 + taxaJuros, n) - 1); 
-            return valorEmprestimo * fator; 
+        // 2. Se não existir, usa um padrão seguro
+        if (!valorString) {
+            valorString = 'R$ 20.000,00';
         }
 
-        // Opção 1
-        document.getElementById('quote-valor-1').innerText = formatarReal(valorNumerico);
-        document.getElementById('quote-parcela-1').innerText = `${parcelasQtd}x de ${formatarReal(calcularParcela(valorNumerico, parcelasQtd))}`;
+        // 3. Converte a string para número de forma robusta:
+        // Remove "R$ ", remove pontos de milhar, troca vírgula por ponto
+        let valorNumerico = parseFloat(
+            valorString.replace('R$', '').replace(/\./g, '').replace(',', '.').trim()
+        );
 
-        // Opção 2
+        // 4. Se a conversão falhar, usa 20000 como fallback
+        if (isNaN(valorNumerico)) {
+            valorNumerico = 20000;
+            valorString = 'R$ 20.000,00';
+        }
+
+        // 5. Recupera a quantidade de parcelas (já funcionava)
+        const parcelasQtd = parseInt(localStorage.getItem('ecred_parcelas')) || 12;
+
+        // ==========================================
+        // ATUALIZAÇÃO DOS TEXTOS NA TELA
+        // ==========================================
+        // Atualiza os textos do topo
+        document.getElementById('seguro-text-valor').innerText = valorString;
+        document.getElementById('seguro-text-checklist').innerText = valorString;
+
+        // Função para formatar número em Real
+        function formatarReal(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        // ==========================================
+        // CÁLCULO DAS PARCELAS
+        // ==========================================
+        const taxaJuros = 0.0081; // 0,81% ao mês
+
+        function calcularParcela(valorEmprestimo, n) {
+            // Fórmula da Tabela Price
+            const fator = (taxaJuros * Math.pow(1 + taxaJuros, n)) / (Math.pow(1 + taxaJuros, n) - 1);
+            return valorEmprestimo * fator;
+        }
+
+        // ==========================================
+        // ATUALIZAÇÃO DOS TRÊS CARDS
+        // ==========================================
+        // Opção 1: Valor original
+        const valorOpcao1 = valorNumerico;
+        document.getElementById('quote-valor-1').innerText = formatarReal(valorOpcao1);
+        document.getElementById('quote-parcela-1').innerText = `${parcelasQtd}x de ${formatarReal(calcularParcela(valorOpcao1, parcelasQtd))}`;
+
+        // Opção 2: Valor original + R$ 2.000,00
         const valorOpcao2 = valorNumerico + 2000;
         document.getElementById('quote-valor-2').innerText = formatarReal(valorOpcao2);
         document.getElementById('quote-parcela-2').innerText = `${parcelasQtd}x de ${formatarReal(calcularParcela(valorOpcao2, parcelasQtd))}`;
 
-        // Opção 3
+        // Opção 3: Valor original + R$ 6.000,00
         const valorOpcao3 = valorNumerico + 6000;
         document.getElementById('quote-valor-3').innerText = formatarReal(valorOpcao3);
         document.getElementById('quote-parcela-3').innerText = `${parcelasQtd}x de ${formatarReal(calcularParcela(valorOpcao3, parcelasQtd))}`;
 
-        // Função de seleção
-        function selecionarSeguro(valor, el) {
-            document.getElementById('display-total').innerText = formatarReal(valor);
+        // ==========================================
+        // FUNÇÃO DE SELEÇÃO DOS CARDS
+        // ==========================================
+        function selecionarSeguro(valorSeguro, el) {
+            // Atualiza o preço do seguro na barra inferior
+            document.getElementById('display-total').innerText = formatarReal(valorSeguro);
+            
+            // Remove a classe 'active' de todos os cards
             document.querySelectorAll('.quote-option').forEach(o => o.classList.remove('active'));
+            
+            // Adiciona a classe 'active' no card clicado
             el.classList.add('active');
         }
 
-        // Mostrar a barra inferior apenas na área de cotação
+        // ==========================================
+        // BARRA INFERIOR (APARECE APENAS NA ÁREA DE COTAÇÃO)
+        // ==========================================
         const observer = new IntersectionObserver((entries) => {
             const bar = document.getElementById('bottom-bar');
-            if(entries[0].isIntersecting) bar.classList.add('visible');
-            else bar.classList.remove('visible');
+            if (entries[0].isIntersecting) {
+                bar.classList.add('visible');
+            } else {
+                bar.classList.remove('visible');
+            }
         }, { threshold: 0.1 });
+
         observer.observe(document.getElementById('area-cotacao'));
     </script>
 </body>
