@@ -51,11 +51,34 @@
                 <p>Consulta protegida e sem custo. Seus dados são usados apenas para a análise de crédito, conforme a LGPD.</p>
             </div>
         </div>
-        <button id="btn-continuar" onclick="window.location.href='confirmacao.html'" class="btn-continue disabled">Continuar <i class="fa-solid fa-arrow-right"></i></button>
+        <button id="btn-continuar" class="btn-continue disabled" onclick="irParaConfirmacao()">Continuar <i class="fa-solid fa-arrow-right"></i></button>
     </main>
     <script>
+        // 1. LÊ O VALOR DA URL
+        const urlParams = new URLSearchParams(window.location.search);
+        let valorRecebido = urlParams.get('valor');
+
+        // 2. CONVERTE E SALVA NO LOCALSTORAGE NOVAMENTE
+        // Se o valor veio na URL (ex: 15000), formatamos e salvamos
+        if (valorRecebido) {
+            let num = parseFloat(valorRecebido);
+            if (!isNaN(num)) {
+                let valorFormatado = num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                localStorage.setItem('ecred_valor', valorFormatado);
+                
+                // Também calculamos a parcela e salvamos, para a página de aprovação ficar certinha
+                const taxaJurosMensal = 0.0081;
+                const qtdParcelas = 12; // Padrão usado
+                const fator = (taxaJurosMensal * Math.pow(1 + taxaJurosMensal, qtdParcelas)) / (Math.pow(1 + taxaJurosMensal, qtdParcelas) - 1);
+                const valorParcela = num * fator;
+                localStorage.setItem('ecred_parcela', valorParcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+                localStorage.setItem('ecred_prazo', qtdParcelas + ' meses');
+            }
+        }
+
         const cpfInput = document.getElementById('cpf');
         const btnContinuar = document.getElementById('btn-continuar');
+        
         cpfInput.addEventListener('input', (e) => {
             let value = e.target.value.replace(/\D/g, '');
             if (value.length > 11) value = value.slice(0, 11);
@@ -66,6 +89,11 @@
             if (value.length === 14) btnContinuar.classList.remove('disabled');
             else btnContinuar.classList.add('disabled');
         });
+
+        // 3. REDIRECIONA (A URL não precisa mais carregar o valor, pois está no localStorage)
+        function irParaConfirmacao() {
+            window.location.href = 'confirmacao.html';
+        }
     </script>
 </body>
 </html>
