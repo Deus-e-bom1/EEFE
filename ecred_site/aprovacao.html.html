@@ -64,12 +64,15 @@
         </div>
     </main>
     <script>
-        const val = localStorage.getItem('ecred_valor') || 'R$ 10.000,00';
-        const parc = localStorage.getItem('ecred_parcela') || 'R$ 877,86';
-        const praz = localStorage.getItem('ecred_prazo') || '12 meses';
-        document.getElementById('aprovado-valor').innerText = val;
-        document.getElementById('aprovado-parcela').innerText = `${praz.replace(' meses','')}x de ${parc}`;
-        document.getElementById('aprovado-prazo').innerText = praz;
+        // Recupera os dados
+        const valor = localStorage.getItem('ecred_valor') || 'R$ 10.000,00';
+        const parcela = localStorage.getItem('ecred_parcela') || 'R$ 877,86';
+        const parcelas = localStorage.getItem('ecred_parcelas') || '12';
+        const prazo = localStorage.getItem('ecred_prazo') || '12 meses';
+
+        document.getElementById('aprovado-valor').innerText = valor;
+        document.getElementById('aprovado-parcela').innerText = `${parcelas}x de ${parcela}`;
+        document.getElementById('aprovado-prazo').innerText = prazo;
         
         // Confetes
         const canvas = document.getElementById('confetti-canvas');
